@@ -35,7 +35,7 @@ Commands:
   account                 Create new MINA protocol account
   sign <transaction>      Sign transaction
   prove [options] <file>  Prove text file content
-  verify                  Verify text file content
+  verify <proof>          Verify text file content
   help [command]          display help for command
 
 Example:

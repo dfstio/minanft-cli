@@ -53,6 +53,7 @@ function calculateMerkleTreeHeight(n: number): number {
 
 export async function prove(file: string, sanitized: string) {
     await minaInit();
+    const filename = file;
     const text = await fs.readFile("./" + file, 'utf8');
     //console.log(text);
     const sanitizedText = (sanitized == "")? text : await fs.readFile("./" + sanitized, 'utf8');
