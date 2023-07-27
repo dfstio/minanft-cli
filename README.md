@@ -15,13 +15,7 @@ Make sure that minanft command is executable by running from minanft-cli folder
 	chmod +x ./src/cli.ts
 	npm link
 
-## Faucet 
-https://faucet.minaprotocol.com
 
-
-## Website
-
-https://minanft.io
 
 ## Usage:
 ```
@@ -57,6 +51,14 @@ Created account:
 
 
 ```
+
+## Website
+https://minanft.io
+
+## Faucet 
+https://faucet.minaprotocol.com
+
+
 
 
 
