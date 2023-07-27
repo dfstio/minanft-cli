@@ -18,13 +18,6 @@ program
         await account();
     });
 
-program
-    .command("sign")
-    .description("Sign transaction")
-    .argument("<transaction>", "transaction")
-    .action(async (price) => {
-        console.log("Not yet implemented");
-    });
 
 program
     .command("prove")
@@ -44,6 +37,25 @@ program
         console.log("Verifying...");
         await verifyProof(proof);
     });
+
+program
+    .command("prepare")
+    .description("Prepare file metadata for NFT creation to verify it on-chain")
+    .argument("<file>", "file")
+    .action(async (file) => {
+        console.log("Not implemented yet");
+        //await createProof(file);
+    });
+
+
+program
+    .command("sign")
+    .description("Sign transaction")
+    .argument("<transaction>", "transaction")
+    .action(async (price) => {
+        console.log("Not yet implemented");
+    });
+
 
 async function main() {
     console.log("Mina NFT offline CLI tool (c) 2023 www.minanft.io\n");

@@ -33,11 +33,12 @@ Options:
 
 Commands:
   account                 Create new MINA protocol account
-  sign <transaction>      Sign transaction
   prove [options] <file>  Prove text file content
   verify <proof>          Verify text file content
+  prepare <file>          Prepare file metadata for NFT creation to verify it on-chain
+  sign <transaction>      Sign transaction
   help [command]          display help for command
-
+  
 Example:
   minanft account
 
