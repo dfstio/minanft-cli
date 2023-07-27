@@ -2,6 +2,8 @@
 import { Command } from "commander";
 const program = new Command();
 import { account } from "./account";
+import { prove } from "./prove";
+import { verifyProof } from "./verify";
 
 program
     .name("minanft")
@@ -28,16 +30,19 @@ program
     .command("prove")
     .description("Prove text file content")
     .argument("<file>", "file")
-    .option("--sanitized", "sanitized text file")
+    .option("-s, --sanitized <string>", "sanitized text file")
     .action(async (file, options) => {
-        console.log("Not yet implemented");
+        console.log("Proving content of ", file);
+        await prove(file, options.sanitized? options.sanitized : "");
     });
 
 program
     .command("verify")
     .description("Verify text file content")
-    .action(async () => {
-        console.log("Not yet implemented");
+    .argument("<proof>", "proof")
+    .action(async (proof) => {
+        console.log("Verifying...");
+        await verifyProof(proof);
     });
 
 async function main() {

@@ -18,8 +18,11 @@
     "commit": "git commit -a -S -m"
   },
   "dependencies": {
+    "@types/cli-progress": "^3.11.0",
     "axios": "^0.27.2",
+    "cli-progress": "^3.12.0",
     "commander": "^9.4.0",
+    "fs": "^0.0.1-security",
     "snarkyjs": "^0.12.1"
   },
   "devDependencies": {
