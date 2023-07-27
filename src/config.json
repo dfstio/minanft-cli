@@ -1,0 +1,10 @@
+{
+    "MINAURL": "https://proxy.berkeley.minaexplorer.com/graphql",
+    "PRIVATEKEY": "",
+    "PUBLICKEY": "",
+    "MINAFEE": "0.1",
+    "MINAEXPLORER": "https://berkeley.minaexplorer.com/wallet/",
+    "NFT_SECRET": "",
+    "NFT_SALT": ""
+
+}
