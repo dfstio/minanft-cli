@@ -1,4 +1,4 @@
-# Mina NFT offline cli tool
+# Mina NFT offline CLI tool
 
 
 ## Installation
