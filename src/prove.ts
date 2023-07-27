@@ -54,11 +54,12 @@ function calculateMerkleTreeHeight(n: number): number {
 export async function prove(file: string, sanitized: string) {
     await minaInit();
     const filename = file;
-    const text = await fs.readFile("./" + file, 'utf8');
+    const text = await fs.readFile("./" + file, "utf8");
     //console.log(text);
-    const sanitizedText = (sanitized == "")? text : await fs.readFile("./" + sanitized, 'utf8');
-		//console.log(sanitizedText);
-		
+    const sanitizedText =
+        sanitized == "" ? text : await fs.readFile("./" + sanitized, "utf8");
+    //console.log(sanitizedText);
+
     const bar = new cliProgress.SingleBar(
         {},
         cliProgress.Presets.shades_classic
@@ -135,7 +136,7 @@ export async function prove(file: string, sanitized: string) {
         .replaceAll("[", "[\n")
         .replaceAll("]", "\n]");
     //console.log(writeData);
-    
+
     const proofFilename = filename + ".json";
     await fs.writeFile(proofFilename, writeData);
     console.log("Proof is written to", proofFilename);

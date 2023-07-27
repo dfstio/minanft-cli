@@ -33,7 +33,7 @@ program
     .option("-s, --sanitized <string>", "sanitized text file")
     .action(async (file, options) => {
         console.log("Proving content of ", file);
-        await prove(file, options.sanitized? options.sanitized : "");
+        await prove(file, options.sanitized ? options.sanitized : "");
     });
 
 program

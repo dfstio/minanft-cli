@@ -145,7 +145,7 @@ async function minaInit() {
 
 export async function verifyProof(file: string) {
     await minaInit();
-    const proofString = await fs.readFile("./" + file, 'utf8');
+    const proofString = await fs.readFile("./" + file, "utf8");
     const proof = JSON.parse(proofString);
 
     const text = proof.sanitizedText;
@@ -160,7 +160,7 @@ export async function verifyProof(file: string) {
         {},
         cliProgress.Presets.shades_classic
     );
-    bar.start(text.length-1, 0);
+    bar.start(text.length - 1, 0);
     //console.log("Verifying proof...", text.length, height);
     const startTime = Date.now();
     let pass = true;
@@ -182,11 +182,13 @@ export async function verifyProof(file: string) {
     if (Field.toJSON(calculatedRootFilename[0]) !== proof.map.root) {
         console.error("wrong map");
         pass = false;
+        await shutdown();
         return;
     }
     if (Field.toJSON(calculatedRootHeight[0]) !== proof.map.root) {
         console.error("wrong map");
         pass = false;
+        await shutdown();
         return;
     }
     if (
@@ -194,11 +196,13 @@ export async function verifyProof(file: string) {
     ) {
         console.error("wrong map");
         pass = false;
+        await shutdown();
         return;
     }
     if (Field.toJSON(calculatedRootHeight[1]) !== Field.toJSON(fieldHeight)) {
         console.error("wrong map");
         pass = false;
+        await shutdown();
         return;
     }
 
