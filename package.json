@@ -10,6 +10,7 @@
     "lint": "eslint src/*.ts",
     "test": "jest --silent",
     "coverage": "jest --coverage",
+    "style": "prettier --tab-width 4 --write {,!(node_modules)/**/}*.ts",
     "push": "git status && git push -u originminanftcli master",
     "gitcreate": "git remote add originminanftcli https://github.com/dfstio/minanft-cli",
     "githubcleartoken": "git config --global --unset credential.helper",

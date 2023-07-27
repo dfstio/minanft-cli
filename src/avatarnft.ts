@@ -12,10 +12,7 @@ import {
     Poseidon,
 } from "snarkyjs";
 
-import {  
-		NFT_SALT,
-    NFT_SECRET
-   } from './config.json';
+import { NFT_SALT, NFT_SECRET } from "./config.json";
 
 export class AvatarNFT extends SmartContract {
     @state(Field) username = State<Field>();
@@ -52,7 +49,7 @@ export class AvatarNFT extends SmartContract {
             Poseidon.hash([
                 Field.fromJSON(NFT_SALT),
                 Field.fromJSON(NFT_SECRET),
-            ]),
+            ])
         );
     }
 
@@ -63,7 +60,7 @@ export class AvatarNFT extends SmartContract {
         newsecret: Field,
         username: Field,
         uri1: Field,
-        uri2: Field,
+        uri2: Field
     ) {
         this.account.provedState.assertEquals(this.account.provedState.get());
         this.account.provedState.get().assertTrue();
@@ -71,7 +68,7 @@ export class AvatarNFT extends SmartContract {
         const pwd = this.pwd.get();
         this.pwd.assertEquals(pwd);
         this.pwd.assertEquals(
-            Poseidon.hash([Field.fromJSON(NFT_SALT), secret]),
+            Poseidon.hash([Field.fromJSON(NFT_SALT), secret])
         );
 
         const nonce = this.nonce.get();
@@ -95,7 +92,7 @@ export class AvatarNFT extends SmartContract {
         const pwd = this.pwd.get();
         this.pwd.assertEquals(pwd);
         this.pwd.assertEquals(
-            Poseidon.hash([Field.fromJSON(NFT_SALT), secret]),
+            Poseidon.hash([Field.fromJSON(NFT_SALT), secret])
         );
 
         const nonce = this.nonce.get();
@@ -114,7 +111,7 @@ export class AvatarNFT extends SmartContract {
         const pwd = this.pwd.get();
         this.pwd.assertEquals(pwd);
         this.pwd.assertEquals(
-            Poseidon.hash([Field.fromJSON(NFT_SALT), secret]),
+            Poseidon.hash([Field.fromJSON(NFT_SALT), secret])
         );
 
         const nonce = this.nonce.get();
@@ -132,7 +129,7 @@ export class AvatarNFT extends SmartContract {
         const pwd = this.pwd.get();
         this.pwd.assertEquals(pwd);
         this.pwd.assertEquals(
-            Poseidon.hash([Field.fromJSON(NFT_SALT), secret]),
+            Poseidon.hash([Field.fromJSON(NFT_SALT), secret])
         );
 
         const nonce = this.nonce.get();
@@ -151,7 +148,7 @@ export class AvatarNFT extends SmartContract {
         const escrow = this.escrow.get();
         this.escrow.assertEquals(escrow);
         this.escrow.assertEquals(
-            Poseidon.hash([Field.fromJSON(NFT_SALT), escrowSecret]),
+            Poseidon.hash([Field.fromJSON(NFT_SALT), escrowSecret])
         );
 
         const nonce = this.nonce.get();
@@ -169,7 +166,7 @@ export class AvatarNFT extends SmartContract {
         const pwd = this.pwd.get();
         this.pwd.assertEquals(pwd);
         this.pwd.assertEquals(
-            Poseidon.hash([Field.fromJSON(NFT_SALT), secret]),
+            Poseidon.hash([Field.fromJSON(NFT_SALT), secret])
         );
 
         const nonce = this.nonce.get();

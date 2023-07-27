@@ -26,22 +26,25 @@ import {
     MerkleWitness,
 } from "snarkyjs";
 
-import {  
-		MINAURL,
+import {
+    MINAURL,
     MINAEXPLORER,
     MINAFEE,
     NFT_SALT,
-    NFT_SECRET } from './config.json';
-    
+    NFT_SECRET,
+} from "./config.json";
+
 import { AvatarNFT } from "./avatarnft";
 import AccountData from "./accountData";
 
 export function formatWinstonTime(ms: number): string {
-    if (ms === undefined) return '';
-    if (ms < 1000) return ms.toString() + ' ms';
-    if (ms < 60 * 1000) return parseInt((ms / 1000).toString()).toString() + ' sec';
-    if (ms < 60 * 60 * 1000) return parseInt((ms / 1000 / 60).toString()).toString() + ' min';
-    return parseInt((ms / 1000 / 60 / 60).toString()).toString() + ' h';
+    if (ms === undefined) return "";
+    if (ms < 1000) return ms.toString() + " ms";
+    if (ms < 60 * 1000)
+        return parseInt((ms / 1000).toString()).toString() + " sec";
+    if (ms < 60 * 60 * 1000)
+        return parseInt((ms / 1000 / 60).toString()).toString() + " min";
+    return parseInt((ms / 1000 / 60 / 60).toString()).toString() + " h";
 }
 
 function generateAccount(): AccountData {
@@ -90,17 +93,17 @@ async function deploy(
     deployerPrivateKey: PrivateKey,
     zkAppPrivateKey: PrivateKey,
     zkapp: AvatarNFT,
-    verificationKey: { data: string; hash: string | Field },
+    verificationKey: { data: string; hash: string | Field }
 ) {
     let sender = deployerPrivateKey.toPublicKey();
     let zkAppPublicKey = zkAppPrivateKey.toPublicKey();
     console.log(
         "using deployer private key with public key",
-        sender.toBase58(),
+        sender.toBase58()
     );
     console.log(
         "using zkApp private key with public key",
-        zkAppPublicKey.toBase58(),
+        zkAppPublicKey.toBase58()
     );
 
     console.log("Deploying zkapp for public key", zkAppPublicKey.toBase58());
@@ -110,7 +113,7 @@ async function deploy(
             AccountUpdate.fundNewAccount(sender);
             // NOTE: this calls `init()` if this is the first deploy
             zkapp.deploy({ verificationKey });
-        },
+        }
     );
     await transaction.prove();
     transaction.sign([deployerPrivateKey, zkAppPrivateKey]);
@@ -123,17 +126,15 @@ async function deploy(
     } else {
         console.log(
             "See deploy transaction at",
-            "https://berkeley.minaexplorer.com/transaction/" + hash,
+            "https://berkeley.minaexplorer.com/transaction/" + hash
         );
         console.log("waiting for zkApp account to be deployed...");
         await res.wait();
     }
 }
 
-
-
 export async function account(): Promise<void> {
-		await minaInit();
-		const acc = await generateAccount();
-		console.log("Created account:\n", acc);
+    await minaInit();
+    const acc = await generateAccount();
+    console.log("Created account:\n", acc);
 }
