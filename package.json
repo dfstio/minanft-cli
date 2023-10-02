@@ -1,9 +1,9 @@
 {
   "name": "minanft-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
-  "author": "Mina NFT",
-  "license": "MIT",
+  "author": "dfst.io",
+  "license": "Apache-2.0",
   "scripts": {
     "cli": "ts-node src/cli.ts",
     "archive": "git archive -o cli.zip HEAD",
