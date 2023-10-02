@@ -1,6 +1,19 @@
 {
   "name": "minanft-cli",
-  "version": "1.0.1",
+  "description": "Mina NFT offline CLI tool",
+  "keywords": [
+    "minanft",
+    "NFT",
+    "cli",
+    "offline",
+    "mina",
+    "zkapp",
+    "zk",
+    "blockchain",
+    "web3",
+    "zero knowledge"
+  ],
+  "version": "1.0.2",
   "main": "index.js",
   "author": "dfst.io",
   "license": "Apache-2.0",
