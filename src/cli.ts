@@ -2,14 +2,15 @@
 import { Command } from "commander";
 import { createAccount, exportAccount, balance } from "./account";
 import { prove } from "./prove";
-import { verifyProof } from "./verify";
+import { reserve } from "./nft";
 import { changePassword } from "./files";
+import { setJWT, exportJWT } from "./jwt";
 
 export const program = new Command();
 
 program
   .name("minanft")
-  .description("Mina NFT offline CLI tool")
+  .description("Mina NFT CLI tool")
   .version("1.0.3")
   .option("-p, --password <string>", "password")
   .option("-o, --offline", "offline mode")
@@ -22,8 +23,12 @@ program
   .option("--private <string>", "private key")
   .option("--public <string>", "public key")
   .action(async (name, options) => {
-    console.log("Creating account... ", name, options);
-    await createAccount(name, options.private, options.public);
+    console.log(`Creating account ${name}...`);
+    await createAccount({
+      name,
+      privateKey: options.private,
+      publicKey: options.public,
+    });
   });
 
 program
@@ -31,8 +36,26 @@ program
   .description("Export existing MINA protocol account")
   .argument("<name>", "Name of the account")
   .action(async (name) => {
-    console.log("Exporting account... ", name);
+    console.log(`Exporting account ${name}...`);
     await exportAccount(name);
+  });
+
+program
+  .command("reserve")
+  .description("Reserve NFT name")
+  .argument("<name>", "Name of the NFT")
+  .argument("[account]", "NFT account, should have private key")
+  .action(async (name, account) => {
+    console.log(`Reserving NFT name ${name}...`);
+    await reserve(name, account);
+  });
+
+program
+  .command("exportjwt")
+  .description("Export MinaNFT JWT token")
+  .action(async () => {
+    console.log("Exporting JWT token... ");
+    await exportJWT();
   });
 
 program
@@ -45,8 +68,29 @@ program
   });
 
 program
+  .command("jwt")
+  .description("Set JWT token for the online MinaNFT API")
+  .argument("<jwt", "JWT token. Get it at https://t.me/minanft_bot?start=auth")
+  .action(async (jwt) => {
+    console.log(`Setting JWT token...`);
+    await setJWT(jwt);
+  });
+
+program
   .command("changepassword")
   .description("Change password for existing file")
+  .argument("<name>", "Name")
+  .argument("<type>", "Type: account | nft | request | map | answer")
+  .argument("<oldPwd>", "Old password")
+  .argument("<newPwd>", "New password")
+  .action(async (name, type, oldPwd, newPwd) => {
+    console.log(`Changing password for ${name}...`);
+    await changePassword(name, type, oldPwd, newPwd);
+  });
+
+program
+  .command("createnft")
+  .description("Create new NFT")
   .argument("<name>", "Name")
   .argument("<type>", "Type: account | nft | request | map | answer")
   .argument("<oldPwd>", "Old password")
@@ -64,32 +108,6 @@ program
   .action(async (file, options) => {
     console.log("Proving content of ", file);
     await prove(file, options.sanitized ? options.sanitized : "");
-  });
-
-program
-  .command("verify")
-  .description("Verify text file content")
-  .argument("<proof>", "proof")
-  .action(async (proof) => {
-    console.log("Verifying...");
-    await verifyProof(proof);
-  });
-
-program
-  .command("prepare")
-  .description("Prepare file metadata for NFT creation to verify it on-chain")
-  .argument("<file>", "file")
-  .action(async (file) => {
-    console.log("Not implemented yet");
-    //await createProof(file);
-  });
-
-program
-  .command("sign")
-  .description("Sign transaction")
-  .argument("<transaction>", "transaction")
-  .action(async (price) => {
-    console.log("Not yet implemented");
   });
 
 async function main() {

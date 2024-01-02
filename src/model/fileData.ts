@@ -1,4 +1,11 @@
-export type FileType = "account" | "nft" | "request" | "map" | "answer";
+export type FileType =
+  | "account"
+  | "name"
+  | "nft"
+  | "request"
+  | "map"
+  | "result"
+  | "jwt";
 
 export interface FileData {
   filename: string;
