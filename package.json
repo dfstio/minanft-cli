@@ -13,40 +13,31 @@
     "web3",
     "zero knowledge"
   ],
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "index.js",
   "author": "dfst.io",
   "license": "Apache-2.0",
   "scripts": {
     "cli": "ts-node src/cli.ts",
-    "archive": "git archive -o cli.zip HEAD",
-    "lint": "eslint src/*.ts",
     "test": "jest --silent",
-    "coverage": "jest --coverage",
-    "style": "prettier --tab-width 4 --write {,!(node_modules)/**/}*.ts",
-    "push": "git status && git push -u originminanftcli master",
-    "gitcreate": "git remote add originminanftcli https://github.com/dfstio/minanft-cli",
-    "githubcleartoken": "git config --global --unset credential.helper",
-    "checkout": "git checkout -b verify",
-    "commit": "git commit -a -S -m"
+    "coverage": "jest --coverage"
   },
   "dependencies": {
-    "@types/cli-progress": "^3.11.0",
-    "axios": "^0.27.2",
+    "@types/cli-progress": "^3.11.5",
+    "axios": "^1.6.3",
     "cli-progress": "^3.12.0",
-    "commander": "^9.4.0",
-    "fs": "^0.0.1-security",
-    "snarkyjs": "^0.12.1"
+    "commander": "^11.1.0",
+    "o1js": "^0.15.1"
   },
   "devDependencies": {
-    "@types/jest": "^28.1.6",
-    "@typescript-eslint/eslint-plugin": "^5.32.0",
-    "@typescript-eslint/parser": "^5.32.0",
-    "eslint": "^8.21.0",
-    "jest": "^28.1.3",
-    "prettier": "2.7.1",
-    "ts-jest": "^28.0.7",
-    "typescript": "^4.7.4"
+    "@types/jest": "^29.5.11",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "prettier": "3.1.1",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
   },
   "eslintConfig": {
     "env": {
@@ -75,5 +66,6 @@
   },
   "bin": {
     "minanft": "./src/cli.ts"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }
