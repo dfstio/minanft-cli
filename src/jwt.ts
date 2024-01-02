@@ -16,6 +16,36 @@ export async function setJWT(jwt: string): Promise<void> {
   }
 }
 
+export async function setPinataJWT(jwt: string): Promise<void> {
+  if (debug()) console.log("Setting Pinata JWT:\n", { jwt });
+  try {
+    await write({
+      data: { jwt },
+      filename: "pinata",
+      type: "jwt",
+      allowRewrite: true,
+    });
+    console.log(`Pinata JWT token has been set`);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+export async function setArweaveJWT(jwt: string): Promise<void> {
+  if (debug()) console.log("Setting Arweave key\n", { jwt });
+  try {
+    await write({
+      data: { jwt },
+      filename: "arweave",
+      type: "jwt",
+      allowRewrite: true,
+    });
+    console.log(`Arweave key has been set`);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 export async function getJWT(): Promise<string | undefined> {
   try {
     const data = await load({ filename: "minanft", type: "jwt" });

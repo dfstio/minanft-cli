@@ -2,9 +2,9 @@
 import { Command } from "commander";
 import { createAccount, exportAccount, balance } from "./account";
 import { prove } from "./prove";
-import { reserve } from "./nft";
+import { reserve, createNFT } from "./nft";
 import { changePassword } from "./files";
-import { setJWT, exportJWT } from "./jwt";
+import { setJWT, exportJWT, setPinataJWT, setArweaveJWT } from "./jwt";
 
 export const program = new Command();
 
@@ -51,6 +51,17 @@ program
   });
 
 program
+  .command("createnft")
+  .description("Create NFT")
+  .argument("<name>", "Reserved name of the NFT")
+  .argument("[owner]", "Owner account, should have private key")
+  .option("--arweave", "Use Arweave for storage")
+  .action(async (name, owner, options) => {
+    console.log(`Creating NFT ${name}...`);
+    await createNFT(name, owner, options.arweave ?? false);
+  });
+
+program
   .command("exportjwt")
   .description("Export MinaNFT JWT token")
   .action(async () => {
@@ -77,20 +88,29 @@ program
   });
 
 program
-  .command("changepassword")
-  .description("Change password for existing file")
-  .argument("<name>", "Name")
-  .argument("<type>", "Type: account | nft | request | map | answer")
-  .argument("<oldPwd>", "Old password")
-  .argument("<newPwd>", "New password")
-  .action(async (name, type, oldPwd, newPwd) => {
-    console.log(`Changing password for ${name}...`);
-    await changePassword(name, type, oldPwd, newPwd);
+  .command("ipfs")
+  .description("Set Pinata JWT token for the IPFS storage")
+  .argument("<jwt", "Pinata JWT token. Get it at https://pinata.cloud")
+  .action(async (jwt) => {
+    console.log(`Setting Pinata JWT token...`);
+    await setPinataJWT(jwt);
   });
 
 program
-  .command("createnft")
-  .description("Create new NFT")
+  .command("arweave")
+  .description("Set Arweave private key for the Arweave storage")
+  .argument(
+    "<key",
+    "Arweave private key. Generate it using Arweave using instructions in README.md"
+  )
+  .action(async (key) => {
+    console.log(`Setting Arweave private key...`);
+    await setArweaveJWT(key);
+  });
+
+program
+  .command("changepassword")
+  .description("Change password for existing file")
   .argument("<name>", "Name")
   .argument("<type>", "Type: account | nft | request | map | answer")
   .argument("<oldPwd>", "Old password")
@@ -111,7 +131,7 @@ program
   });
 
 async function main() {
-  console.log("Mina NFT offline CLI tool (c) 2024 www.minanft.io\n");
+  console.log("Mina NFT CLI tool (c) 2024 www.minanft.io\n");
   await program.parseAsync();
 }
 
