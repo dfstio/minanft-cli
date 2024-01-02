@@ -12,6 +12,7 @@ import { debug } from "./debug";
 import { write } from "./files";
 import { createAccount } from "./account";
 import { offline } from "./offline";
+import { getCommands } from "./nftcli";
 
 export async function reserveName(
   name: string,
@@ -87,4 +88,15 @@ export async function reserve(name: string, account: string) {
       );
     return reserved;
   }
+}
+
+export async function createNFT(
+  name: string,
+  owner: string | undefined,
+  arweave: boolean
+) {
+  if (debug()) console.log("Creating NFT:\n", { name, owner, arweave });
+  console.log("After adding metadata and files, execute mint command.");
+  console.log("To exit without minting, execute exit command.");
+  await getCommands();
 }
