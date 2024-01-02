@@ -5,47 +5,64 @@ import { debug } from "./debug";
 import { password as getPassword } from "./password";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function write(
+export async function write(params: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any,
-  filename: string,
-  type: FileType,
-  allowRewrite = false,
-  password?: string
-) {
-  await createDirectories();
-  if (debug())
-    console.log("Writing file", {
-      data,
+  data: any;
+  filename: string;
+  type: FileType;
+  allowRewrite?: boolean;
+  password?: string;
+}): Promise<string | undefined> {
+  const { data, filename, type, allowRewrite, password } = params;
+  const folder = type === "request" ? "./requests/" : "./data/";
+  const name =
+    folder +
+    (type === "request" ? getFormattedDateTime() + "." : "") +
+    filename +
+    "." +
+    type +
+    ".json";
+  try {
+    await createDirectories();
+    if (debug())
+      console.log("Writing file", {
+        data,
+        filename,
+        type,
+        allowRewrite,
+      });
+
+    if (!allowRewrite && (await isExist(name))) {
+      console.error(`File ${name} already exists`);
+      return;
+    }
+    await backup(filename, type);
+    const pwd = password ?? getPassword();
+    let encryptedData = undefined;
+    if (pwd && type !== "request")
+      encryptedData = encrypt(JSON.stringify(data), pwd);
+
+    const filedata: FileData = {
       filename,
       type,
-      allowRewrite,
-    });
-  const name = "./data/" + filename + "." + type + ".json";
-  if (!allowRewrite && (await isExist(name))) {
-    console.error(`File ${name} already exists`);
-    return;
+      timestamp: Date.now(),
+      data: encryptedData ? encryptedData.encryptedData : data,
+    };
+    if (encryptedData) filedata.iv = encryptedData.iv;
+    await fs.writeFile(name, JSON.stringify(filedata, null, 2));
+    return name;
+  } catch (e) {
+    console.error(`Error writing file ${name}`);
+    return undefined;
   }
-  await backup(filename, type);
-  const pwd = password ?? getPassword();
-  let encryptedData = undefined;
-  if (pwd) encryptedData = encrypt(JSON.stringify(data), pwd);
-
-  const filedata: FileData = {
-    filename,
-    type,
-    timestamp: Date.now(),
-    data: encryptedData ? encryptedData.encryptedData : data,
-  };
-  if (encryptedData) filedata.iv = encryptedData.iv;
-  await fs.writeFile(name, JSON.stringify(filedata, null, 2));
 }
 
-export async function load(
-  filename: string,
-  type: FileType,
-  password?: string
-) {
+export async function load(params: {
+  filename: string;
+  type: FileType;
+  password?: string;
+}) {
+  const { filename, type, password } = params;
   const name = "./data/" + filename + "." + type + ".json";
   try {
     const filedata = await fs.readFile(name, "utf8");
@@ -82,8 +99,15 @@ export async function changePassword(
   const name = "./data/" + filename + "." + type + ".json";
   try {
     if (await isExist(name)) {
-      const data = await load(filename, type, oldPwd);
-      if (data) await write(data, filename, type, true, newPwd);
+      const data = await load({ filename, type, password: oldPwd });
+      if (data)
+        await write({
+          data,
+          filename,
+          type,
+          allowRewrite: true,
+          password: newPwd,
+        });
     } else {
       console.error(`File ${name} does not exist`);
     }
@@ -141,6 +165,12 @@ async function createDirectories() {
     // if not, create it
     await fs.mkdir("./data/backup");
   }
+  try {
+    await fs.access("./requests");
+  } catch (e) {
+    // if not, create it
+    await fs.mkdir("./requests");
+  }
 }
 
 function getFormattedDateTime(): string {
@@ -154,7 +184,7 @@ function getFormattedDateTime(): string {
   const minutes = now.getMinutes().toString().padStart(2, "0");
   const seconds = now.getSeconds().toString().padStart(2, "0");
 
-  return `${year}.${month}.${day}-${hours}.${minutes}.${seconds}`;
+  return `${year}.${month}.${day}-${hours}:${minutes}:${seconds}`;
 }
 
 function encrypt(

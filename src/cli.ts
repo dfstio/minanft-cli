@@ -1,6 +1,6 @@
 #! /usr/bin/env ts-node
 import { Command } from "commander";
-import { createAccount, exportAccount } from "./account";
+import { createAccount, exportAccount, balance } from "./account";
 import { prove } from "./prove";
 import { verifyProof } from "./verify";
 import { changePassword } from "./files";
@@ -33,6 +33,15 @@ program
   .action(async (name) => {
     console.log("Exporting account... ", name);
     await exportAccount(name);
+  });
+
+program
+  .command("balance")
+  .description("Check the balance of the existing MINA protocol account")
+  .argument("<name>", "Name of the account")
+  .action(async (name) => {
+    console.log(`Checking the balance of the ${name}...`);
+    await balance(name);
   });
 
 program

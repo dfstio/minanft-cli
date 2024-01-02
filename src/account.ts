@@ -1,6 +1,9 @@
-import { PrivateKey } from "o1js";
+import { PrivateKey, PublicKey } from "o1js";
 import { write, load } from "./files";
 import { debug } from "./debug";
+import { offline } from "./offline";
+import { accountBalanceMina } from "minanft";
+import { init } from "./mina";
 
 import AccountData from "./model/accountData";
 
@@ -28,13 +31,42 @@ export async function createAccount(
       publicKey: pk,
       privateKey: sk,
     };
-    await write(acc, name, "account");
+    await write({ data: acc, filename: name, type: "account" });
   } catch (e) {
     console.error(e);
   }
 }
 
 export async function exportAccount(name: string): Promise<void> {
-  const acc: AccountData = await load(name, "account");
+  const acc: AccountData = await load({ filename: name, type: "account" });
   console.log(acc);
+}
+
+export async function balance(name: string): Promise<void> {
+  try {
+    const acc: AccountData = await load({ filename: name, type: "account" });
+    if (offline()) {
+      const filename = await write({
+        data: { request: "balance", name, publicKey: acc.publicKey },
+        filename: "balance",
+        type: "request",
+      });
+      if (!filename) {
+        console.error(`Error creating balance request file`);
+        return;
+      } else {
+        console.log(
+          `Created balance request file ${filename}, please send it to the online computer and execute on https://minanft.io/tools`
+        );
+      }
+    } else {
+      init();
+      const balance = await accountBalanceMina(
+        PublicKey.fromBase58(acc.publicKey)
+      );
+      console.log(`Balance of ${acc.publicKey} is ${balance} MINA`);
+    }
+  } catch (e) {
+    console.error(`Error receiving balance of the account`, e);
+  }
 }

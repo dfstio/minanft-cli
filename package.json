@@ -27,6 +27,7 @@
     "axios": "^1.6.3",
     "cli-progress": "^3.12.0",
     "commander": "^11.1.0",
+    "minanft": "^1.3.29",
     "o1js": "^0.15.1"
   },
   "devDependencies": {
