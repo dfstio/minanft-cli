@@ -7,11 +7,12 @@ import { init } from "./mina";
 
 import AccountData from "./model/accountData";
 
-export async function createAccount(
-  name: string,
-  privateKey: string | undefined,
-  publicKey: string | undefined
-): Promise<void> {
+export async function createAccount(params: {
+  name: string;
+  privateKey?: string;
+  publicKey?: string;
+}): Promise<void> {
+  const { name, privateKey, publicKey } = params;
   if (debug())
     console.log("Creating account:\n", { name, privateKey, publicKey });
   try {
@@ -40,6 +41,13 @@ export async function createAccount(
 export async function exportAccount(name: string): Promise<void> {
   const acc: AccountData = await load({ filename: name, type: "account" });
   console.log(acc);
+}
+
+export async function getAccount(
+  name: string
+): Promise<AccountData | undefined> {
+  const acc: AccountData = await load({ filename: name, type: "account" });
+  return acc;
 }
 
 export async function balance(name: string): Promise<void> {

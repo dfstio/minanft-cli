@@ -1,5 +1,6 @@
 import { program } from "./cli";
 
 export function password(): string | undefined {
-  return program.opts().password;
+  const pwd = program.opts().password;
+  return pwd ?? process.env.MINANFT_PASSWORD ?? undefined;
 }
