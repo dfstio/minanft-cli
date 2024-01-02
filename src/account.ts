@@ -1,30 +1,40 @@
-import { PrivateKey, PublicKey } from "o1js";
+import { PrivateKey } from "o1js";
+import { write, load } from "./files";
+import { debug } from "./debug";
 
 import AccountData from "./model/accountData";
 
-export function formatWinstonTime(ms: number): string {
-  if (ms === undefined) return "";
-  if (ms < 1000) return ms.toString() + " ms";
-  if (ms < 60 * 1000)
-    return parseInt((ms / 1000).toString()).toString() + " sec";
-  if (ms < 60 * 60 * 1000)
-    return parseInt((ms / 1000 / 60).toString()).toString() + " min";
-  return parseInt((ms / 1000 / 60 / 60).toString()).toString() + " h";
+export async function createAccount(
+  name: string,
+  privateKey: string | undefined,
+  publicKey: string | undefined
+): Promise<void> {
+  if (debug())
+    console.log("Creating account:\n", { name, privateKey, publicKey });
+  try {
+    let sk = privateKey ?? "";
+    let pk = publicKey ?? "";
+    if (!privateKey && !publicKey) sk = PrivateKey.random().toBase58();
+    if (!publicKey) pk = PrivateKey.fromBase58(sk).toPublicKey().toBase58();
+    else if (
+      privateKey &&
+      PrivateKey.fromBase58(sk).toPublicKey().toBase58() !== publicKey
+    ) {
+      console.error("Private and public keys do not match");
+      return;
+    }
+
+    const acc: AccountData = {
+      publicKey: pk,
+      privateKey: sk,
+    };
+    await write(acc, name, "account");
+  } catch (e) {
+    console.error(e);
+  }
 }
 
-function generateAccount(): AccountData {
-  const zkAppPrivateKey = PrivateKey.random();
-  const zkAppPrivateKeyString = PrivateKey.toBase58(zkAppPrivateKey);
-  const zkAppAddress = zkAppPrivateKey.toPublicKey();
-  const zkAppAddressString = PublicKey.toBase58(zkAppAddress);
-
-  return {
-    privateKey: zkAppPrivateKeyString,
-    publicKey: zkAppAddressString,
-  };
-}
-
-export async function account(): Promise<void> {
-  const acc = generateAccount();
-  console.log("Created account:\n", acc);
+export async function exportAccount(name: string): Promise<void> {
+  const acc: AccountData = await load(name, "account");
+  console.log(acc);
 }

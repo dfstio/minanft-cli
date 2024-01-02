@@ -1,21 +1,50 @@
 #! /usr/bin/env ts-node
 import { Command } from "commander";
-const program = new Command();
-import { account } from "./account";
+import { createAccount, exportAccount } from "./account";
 import { prove } from "./prove";
 import { verifyProof } from "./verify";
+import { changePassword } from "./files";
+
+export const program = new Command();
 
 program
   .name("minanft")
   .description("Mina NFT offline CLI tool")
-  .version("1.0.3");
+  .version("1.0.3")
+  .option("-p, --password <string>", "password")
+  .option("-o, --offline", "offline mode")
+  .option("-d, --debug", "debug mode");
 
 program
-  .command("account")
-  .description("Create new MINA protocol account")
-  .action(async () => {
-    console.log("Creating account... ");
-    await account();
+  .command("createaccount")
+  .description("Create new MINA protocol account or import existing one")
+  .argument("<name>", "Name of the account")
+  .option("--private <string>", "private key")
+  .option("--public <string>", "public key")
+  .action(async (name, options) => {
+    console.log("Creating account... ", name, options);
+    await createAccount(name, options.private, options.public);
+  });
+
+program
+  .command("exportaccount")
+  .description("Export existing MINA protocol account")
+  .argument("<name>", "Name of the account")
+  .action(async (name) => {
+    console.log("Exporting account... ", name);
+    await exportAccount(name);
+  });
+
+program
+  .command("changepassword")
+  .description("Change password for existing file")
+  .argument("<name>", "Name")
+  .argument("<type>", "Type: account | nft | request | map | answer")
+  .argument("<oldPwd>", "Old password")
+  .argument("<newPwd>", "New password")
+  .action(async (name, type, oldPwd, newPwd) => {
+    console.log(`Changing password for ${name}...`);
+    await changePassword(name, type, oldPwd, newPwd);
   });
 
 program
