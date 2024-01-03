@@ -31,7 +31,7 @@ export async function setPinataJWT(jwt: string): Promise<void> {
   }
 }
 
-export async function setArweaveJWT(jwt: string): Promise<void> {
+export async function setArweaveKey(jwt: string): Promise<void> {
   if (debug()) console.log("Setting Arweave key\n", { jwt });
   try {
     await write({
@@ -53,6 +53,28 @@ export async function getJWT(): Promise<string | undefined> {
     return data?.jwt;
   } catch (e) {
     console.error("Error reading ./data/minanft.jwt.json file:", e);
+    return undefined;
+  }
+}
+
+export async function getArweaveKey(): Promise<string | undefined> {
+  try {
+    const data = await load({ filename: "arweave", type: "jwt" });
+    if (debug()) console.log("JWT data:", data);
+    return data?.jwt;
+  } catch (e) {
+    console.error("Error reading ./data/arweave.jwt.json file:", e);
+    return undefined;
+  }
+}
+
+export async function getPinataJWT(): Promise<string | undefined> {
+  try {
+    const data = await load({ filename: "pinata", type: "jwt" });
+    if (debug()) console.log("JWT data:", data);
+    return data?.jwt;
+  } catch (e) {
+    console.error("Error reading ./data/pinata.jwt.json file:", e);
     return undefined;
   }
 }

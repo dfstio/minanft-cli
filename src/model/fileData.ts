@@ -5,6 +5,7 @@ export type FileType =
   | "request"
   | "map"
   | "result"
+  | "proof"
   | "jwt";
 
 export interface FileData {
