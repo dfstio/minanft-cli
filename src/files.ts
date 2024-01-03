@@ -57,6 +57,45 @@ export async function write(params: {
   }
 }
 
+export async function save(params: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+  filename: string;
+  type: FileType;
+  allowRewrite?: boolean;
+}): Promise<string | undefined> {
+  const { data, filename, type, allowRewrite } = params;
+  const folder = type === "request" ? "./requests/" : "./data/";
+  const name =
+    folder +
+    (type === "request" ? getFormattedDateTime() + "." : "") +
+    filename +
+    "." +
+    type +
+    ".json";
+  try {
+    await createDirectories();
+    if (debug())
+      console.log("Writing file", {
+        data,
+        filename,
+        type,
+        allowRewrite,
+      });
+
+    if (!allowRewrite && (await isExist(name))) {
+      console.error(`File ${name} already exists`);
+      return;
+    }
+    await backup(filename, type);
+    await fs.writeFile(name, JSON.stringify(data, null, 2));
+    return name;
+  } catch (e) {
+    console.error(`Error writing file ${name}`);
+    return undefined;
+  }
+}
+
 export async function load(params: {
   filename: string;
   type: FileType;
