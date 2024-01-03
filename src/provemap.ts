@@ -11,15 +11,15 @@ export async function proveMap(name: string, keys: string[]) {
   if (debug()) console.log("NFT metadata:\n", { uri });
   if (uri === undefined) throw new Error(`NFT ${name} not found`);
   const nameServiceAddress = PublicKey.fromBase58(MINANFT_NAME_SERVICE);
-  const nft = new MinaNFT({
-    name: uri.name,
-    address: PublicKey.fromBase58(uri.address),
-    nameService: nameServiceAddress,
+  const nft = MinaNFT.fromJSON({
+    metadataURI: JSON.stringify(uri),
+    nameServiceAddress,
   });
 
-  await nft.loadMetadata(JSON.stringify(uri));
   const loadedJson = nft.toJSON();
   if (debug()) console.log(`loadedJson:`, JSON.stringify(loadedJson, null, 2));
+  const keyvalues = getKeys(uri, keys);
+  if (debug()) console.log(`keyvalues:`, keyvalues);
 
   if (!offline()) {
     MinaNFT.minaInit("testworld2");
@@ -42,7 +42,7 @@ export async function proveMap(name: string, keys: string[]) {
     name: uri.name,
     version: uri.version,
     address: uri.address,
-    keys: getKeys(uri, keys),
+    keys: keyvalues,
     proof: proof.toJSON(),
   };
 
@@ -62,11 +62,35 @@ export async function proveMap(name: string, keys: string[]) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getKeys(uri: any, keys: string[]) {
   const result: { key: string; value: string }[] = [];
-  keys.forEach((key) => {
-    const row = uri.properties.find(key);
-    if (row !== undefined)
-      result.push({ key, value: uri.properties[key].data });
+
+  Object.entries(uri.properties).forEach(([key, value]) => {
+    if (typeof key !== "string")
+      throw new Error("uri: NFT metadata key mismatch - should be string");
+    if (typeof value !== "object")
+      throw new Error("uri: NFT metadata value mismatch - should be object");
+
+    // check if key is in the list
+    if (keys.includes(key)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const obj = value as any;
+      const data = obj.data;
+      const kind = obj.kind;
+      if (data === undefined)
+        throw new Error(
+          `uri: NFT metadata: data should present: ${key} : ${value} kind: ${kind} data: ${data}`
+        );
+
+      if (kind === undefined || typeof kind !== "string")
+        throw new Error(
+          `uri: NFT metadata: kind mismatch - should be string: ${key} : ${value}`
+        );
+      if (kind === "string") {
+        result.push({ key, value: data });
+      } else
+        throw new Error(
+          `uri: NFT metadata: kind ${kind} not supported for ${key} : ${value}`
+        );
+    }
   });
-  if (debug()) console.log(`getKeys:`, result);
   return result;
 }
