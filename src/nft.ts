@@ -236,7 +236,7 @@ export async function mint() {
       if (tx === undefined)
         throw new Error("Error minting NFT: cannot send transaction");
       Memory.info(`minted`);
-      const uri = nft().exportToJSON(true);
+      const uri = nft().exportToJSON(false);
       await write({ filename: nft().name, type: "nft", data: uri });
     }
   } catch (e) {
