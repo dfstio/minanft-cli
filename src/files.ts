@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import crypto from "crypto";
-import { FileType, FileData } from "./model/fileData";
+import { FileType, FileData, FileEncoding } from "./model/fileData";
 import { debug } from "./debug";
 import { password as getPassword } from "./password";
 
@@ -129,6 +129,35 @@ export async function load(params: {
   }
 }
 
+export async function isFileExist(params: {
+  filename: string;
+  type: FileType;
+}): Promise<boolean> {
+  const { filename, type } = params;
+  const folder = type === "request" ? "./requests/" : "./data/";
+  const name =
+    folder +
+    (type === "request" ? getFormattedDateTime() + "." : "") +
+    filename +
+    "." +
+    type +
+    ".json";
+  try {
+    if (debug())
+      console.log("isFileExist", {
+        filename,
+        type,
+        name,
+      });
+
+    if (await isExist(name)) return true;
+    else return false;
+  } catch (e) {
+    console.error(`Error checking file ${name}`);
+    return false;
+  }
+}
+
 export async function loadPlain(params: { filename: string; type: FileType }) {
   const { filename, type } = params;
   const name = "./data/" + filename + "." + type + ".json";
@@ -139,6 +168,42 @@ export async function loadPlain(params: { filename: string; type: FileType }) {
   } catch (e) {
     console.error(`File ${name} does not exist or has wrong format`);
     return undefined;
+  }
+}
+
+export async function loadBinary(filename: string) {
+  try {
+    return await fs.readFile(filename, "binary");
+  } catch (e) {
+    console.error(`Cannot read file ${filename}`, e);
+    return undefined;
+  }
+}
+
+export async function loadText(filename: string) {
+  try {
+    return await fs.readFile(filename, "utf8");
+  } catch (e) {
+    console.error(`Cannot read file ${filename}`, e);
+    return undefined;
+  }
+}
+
+export async function saveBinary(params: { data: Buffer; filename: string }) {
+  const { data, filename } = params;
+  try {
+    await fs.writeFile(filename, data, "binary");
+  } catch (e) {
+    console.error(`Error writing file ${filename}`, e);
+  }
+}
+
+export async function saveText(params: { data: string; filename: string }) {
+  const { data, filename } = params;
+  try {
+    await fs.writeFile(filename, data, "utf8");
+  } catch (e) {
+    console.error(`Error writing file ${filename}`, e);
   }
 }
 
