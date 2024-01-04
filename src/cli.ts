@@ -8,6 +8,8 @@ import { proveMap } from "./provemap";
 import { proveFile } from "./provefile";
 import { verifyMap } from "./verifymap";
 import { verifyFile } from "./verifyfile";
+import { mask } from "./mask";
+import { redact } from "./redact";
 
 export const program = new Command();
 
@@ -93,9 +95,10 @@ program
   .argument("<name>", "Name of the NFT")
   .argument("<key>", "Key of the file to verify")
   .argument("<file>", "File to verify")
-  .action(async (name, key, file) => {
+  .option("--noroot", "Skip calculating Merkle Tree root of the file")
+  .action(async (name, key, file, options) => {
     console.log(`Verifying file ${key} for NFT ${name}...`);
-    await verifyFile(name, key, file);
+    await verifyFile(name, key, file, options.noroot ?? false);
   });
 
 program
@@ -164,6 +167,37 @@ program
   .action(async (key) => {
     console.log(`Setting Arweave private key...`);
     await setArweaveKey(key);
+  });
+
+program
+  .command("mask")
+  .description("Create or update file mask")
+  .argument("<name>", "Name of the mask")
+  .argument("<start", "Number - start of the mask")
+  .argument("<end>", "Number - end of the mask")
+  .action(async (name, start, end) => {
+    console.log(`Creating or updating mask ${name}...`);
+    await mask(name, start, end);
+  });
+
+program
+  .command("redact")
+  .description("Create redacted file using mask")
+  .argument("<name>", "Name of the file")
+  .argument("<mask>", "Name of the mask")
+  .option("--binary", "file is binary")
+  .option("--text", "file is text")
+  .action(async (name, mask, options) => {
+    if (options.binary === undefined && options.text === undefined) {
+      console.error(`Please specify --binary or --text`);
+      return;
+    }
+    if (options.binary !== undefined && options.text !== undefined) {
+      console.error(`Please specify --binary or --text`);
+      return;
+    }
+    console.log(`Creating redacted file using mask...`);
+    await redact(name, mask, options.text === true ? "text" : "binary");
   });
 
 program

@@ -23,7 +23,12 @@ import {
   MinaNFTTreeVerifierFunction,
 } from "minanft";
 
-export async function verifyFile(name: string, key: string, file: string) {
+export async function verifyFile(
+  name: string,
+  key: string,
+  file: string,
+  noroot: boolean
+) {
   try {
     if (debug()) console.log("Verifying NFT file:\n", { name });
     const proofJson = await loadPlain({
@@ -35,7 +40,7 @@ export async function verifyFile(name: string, key: string, file: string) {
     const files = proofJson.files;
     if (files === undefined) throw new Error(`Proof for ${name} not found`);
     if (files.length < 1) throw new Error(`Proof for ${name} is empty`);
-    const checkFileResult = await checkFile(file, files[0].value);
+    const checkFileResult = await checkFile(file, files[0].value, noroot);
     if (!checkFileResult) throw new Error(`Proof for ${name} is not valid`);
     const proof = files[0].proof;
     if (proof === undefined) throw new Error(`Proof ${name} is empty`);
@@ -65,25 +70,42 @@ export async function verifyFile(name: string, key: string, file: string) {
     const ok = await verify(proof as JsonProof, verificationKey);
     if (!ok) throw new Error(`Proof ${name} is not valid`);
 
-    console.log(`Proof ${name} is valid`);
+    console.log(`Proof for the file ${key} of the NFT ${name} is valid`);
   } catch (e) {
-    console.error(`Proof ${name} is not valid:`, e);
+    console.error(`Proof for ${name} is not valid:`, e);
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function checkFile(filename: string, data: any): Promise<boolean> {
-  const file = new File(filename);
-  await file.setMetadata();
-  await file.treeData(false);
-  await file.sha3_512();
-  const fileData: FileData = await file.data();
-  if (debug()) console.log("fileData", fileData);
+async function checkFile(
+  filename: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any,
+  noroot: boolean
+): Promise<boolean> {
   const proofData = FileData.fromJSON(data);
   if (debug()) console.log("proofData", proofData);
+  const file = new File(filename);
+  await file.setMetadata();
+
+  await file.sha3_512();
+  if (noroot === false && proofData.fileRoot.toJSON() !== Field(0).toJSON()) {
+    console.log("Calculating file Merkle Tree root...");
+    console.time("Calculated file Merkle Tree root");
+    await file.treeData(true);
+    console.timeEnd("Calculated file Merkle Tree root");
+  } else {
+    await file.treeData(false);
+  }
+  const fileData: FileData = await file.data();
+  if (debug()) console.log("fileData", fileData);
+
+  if (noroot === true) {
+    fileData.fileRoot = proofData.fileRoot;
+    fileData.height = proofData.height;
+  }
+
   fileData.storage = proofData.storage;
-  fileData.fileRoot = proofData.fileRoot;
-  fileData.height = proofData.height;
+
   const { fields: fileFields } = fileData.buildTree();
   const { fields: proofFields } = proofData.buildTree();
   if (
@@ -175,11 +197,11 @@ async function check(
     );
     await fetchAccount({ publicKey: zkApp.address, tokenId: zkNames.token.id });
     const metadata = zkApp.metadata.get();
-    const version = zkApp.version.get();
+    const versionApp = zkApp.version.get();
     if (
       metadata.data.toJSON() !== json.proof?.publicInput[0] ||
       metadata.kind.toJSON() !== json.proof?.publicInput[1] ||
-      version.toJSON() !== version.toString()
+      versionApp.toJSON() !== version.toString()
     ) {
       console.error(
         "metadata check error",
@@ -187,8 +209,8 @@ async function check(
         json.proof?.publicInput[0],
         metadata.kind.toJSON(),
         json.proof?.publicInput[1],
-        version.toJSON(),
-        json.version.toString()
+        versionApp.toJSON(),
+        version.toString()
       );
       return false;
     }

@@ -53,7 +53,7 @@ programNFT
   .option("--private", "Make this file private")
   .option("--ipfs <string>", "IPFS hash of the file")
   .option("--arweave <string>", "Arweave hash of the file")
-  .option("--noroot", "Skip calculating Merkle Tree root of the image")
+  .option("--noroot", "Skip calculating Merkle Tree root of the file")
   .action(async (key, file, options) => {
     console.log(`Adding image ${file}...`);
     if (debug()) console.log({ file, options });

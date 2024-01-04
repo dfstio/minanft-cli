@@ -1,0 +1,10 @@
+Tesla Car Sale Parameters
+-------------------------
+1. Model: Tesla Model S
+2. Base Price: $85,000
+3. Optional Features:
+  - Enhanced Autopilot: $5,000
+  - Full Self-Driving Capability: $10,000
+4. Warranty: 4 years or 50,000 miles, whichever comes first
+5. Maximum Dealer Discount: 5%
+6. Cost to Dealer: $79,000
