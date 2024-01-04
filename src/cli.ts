@@ -1,11 +1,13 @@
 #! /usr/bin/env ts-node
 import { Command } from "commander";
 import { createAccount, exportAccount, balance } from "./account";
-import { prove } from "./provetree";
 import { reserve, createNFT, indexName } from "./nft";
 import { changePassword } from "./files";
 import { setJWT, exportJWT, setPinataJWT, setArweaveKey } from "./jwt";
 import { proveMap } from "./provemap";
+import { proveFile } from "./provefile";
+import { verifyMap } from "./verifymap";
+import { verifyFile } from "./verifyfile";
 
 export const program = new Command();
 
@@ -68,6 +70,41 @@ program
   .action(async (name, options) => {
     console.log(`Proving keys for NFT ${name}...`);
     await proveMap(name, options.keys);
+  });
+
+program
+  .command("provefile")
+  .description("Prove NFT file")
+  .argument("<name>", "Name of the NFT")
+  .argument("<key>", "Key of the file to prove")
+  .option("--api", "Use MinaNFT API to calculate proofs")
+  .action(async (name, key, options) => {
+    console.log(`Proving file ${key} for NFT ${name}...`);
+    if (options.api)
+      console.error(
+        "API mode is not included in the public release due to potential high AWS costs. Please contact support@minanft.io to enable it."
+      );
+    else await proveFile(name, key);
+  });
+
+program
+  .command("verifyfile")
+  .description("Verify NFT file")
+  .argument("<name>", "Name of the NFT")
+  .argument("<key>", "Key of the file to verify")
+  .argument("<file>", "File to verify")
+  .action(async (name, key, file) => {
+    console.log(`Verifying file ${key} for NFT ${name}...`);
+    await verifyFile(name, key, file);
+  });
+
+program
+  .command("verify")
+  .description("Verify NFT metadata")
+  .argument("<name>", "Name of the NFT")
+  .action(async (name) => {
+    console.log(`Verifying proof for NFT ${name}...`);
+    await verifyMap(name);
   });
 
 program

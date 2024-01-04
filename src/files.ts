@@ -129,6 +129,19 @@ export async function load(params: {
   }
 }
 
+export async function loadPlain(params: { filename: string; type: FileType }) {
+  const { filename, type } = params;
+  const name = "./data/" + filename + "." + type + ".json";
+  try {
+    const filedata = await fs.readFile(name, "utf8");
+    const data = JSON.parse(filedata);
+    return data;
+  } catch (e) {
+    console.error(`File ${name} does not exist or has wrong format`);
+    return undefined;
+  }
+}
+
 export async function changePassword(
   filename: string,
   type: FileType,
