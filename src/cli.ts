@@ -2,7 +2,7 @@
 import { Command } from "commander";
 import { createAccount, exportAccount, balance } from "./account";
 import { prove } from "./provetree";
-import { reserve, createNFT } from "./nft";
+import { reserve, createNFT, indexName } from "./nft";
 import { changePassword } from "./files";
 import { setJWT, exportJWT, setPinataJWT, setArweaveKey } from "./jwt";
 import { proveMap } from "./provemap";
@@ -49,6 +49,15 @@ program
   .action(async (name, account) => {
     console.log(`Reserving NFT name ${name}...`);
     await reserve(name, account);
+  });
+
+program
+  .command("index")
+  .description("Index NFT name for minanft.io frontend")
+  .argument("<name>", "Name of the NFT")
+  .action(async (name) => {
+    console.log(`Indexing NFT name ${name}...`);
+    await indexName(name);
   });
 
 program

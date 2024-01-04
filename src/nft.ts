@@ -243,3 +243,15 @@ export async function mint() {
     console.error("Error minting NFT:", e);
   }
 }
+
+export async function indexName(name: string) {
+  if (offline()) throw new Error("Cannot index NFT in offline mode");
+  const JWT = await getJWT();
+  if (JWT === undefined)
+    throw new Error("JWT token is not set. Please run 'minanft jwt' command");
+  const minanft = new api(JWT);
+  const nftName = name[0] === "@" ? name : "@" + name;
+  if (debug()) console.log("indexName: Indexing name:", { nftName });
+  const indexed = await minanft.indexName({ name });
+  console.log("NFT indexation result:\n", indexed);
+}
