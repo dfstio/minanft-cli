@@ -56,12 +56,25 @@ programNFT
   .option("--arweave <string>", "Arweave hash of the file")
   .option("--noroot", "Skip calculating Merkle Tree root of the file")
   .option("--text", "Text file")
+  .option("--png", "PNG file")
   .action(async (key, file, options) => {
     if (debug()) console.log({ file, options });
     if (options.text === true) {
       console.log(`Adding text file ${file}...`);
       const text = await fs.readFile(file, "utf8");
       nft().updateText({ key, text, isPrivate: options.private ?? false });
+    } else if (options.png === true) {
+      console.log(`Adding png file ${file}...`);
+      await nft().updateFile({
+        key,
+        filename: file,
+        pinataJWT,
+        arweaveKey,
+        calculateRoot: options.noroot === true ? false : true,
+        IPFSHash: options.ipfs,
+        ArweaveHash: options.arweave,
+        isPNG: true,
+      });
     } else {
       console.log(`Adding binary file ${file}...`);
       await nft().updateFile({

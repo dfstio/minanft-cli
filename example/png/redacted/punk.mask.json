@@ -1,0 +1,13 @@
+{
+  "filename": "punk",
+  "type": "mask",
+  "timestamp": 1704490751575,
+  "data": {
+    "mask": [
+      {
+        "start": 10,
+        "end": 100
+      }
+    ]
+  }
+}

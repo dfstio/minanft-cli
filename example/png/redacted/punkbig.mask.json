@@ -1,0 +1,13 @@
+{
+  "filename": "punkbig",
+  "type": "mask",
+  "timestamp": 1704489756540,
+  "data": {
+    "mask": [
+      {
+        "start": 35000,
+        "end": 200000
+      }
+    ]
+  }
+}
