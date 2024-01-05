@@ -1,10 +1,15 @@
-import { loadBinary, loadText, load, saveBinary, saveText } from "./files";
-import { FileEncoding } from "./model/fileData";
+import { loadText, load, saveText } from "./files";
+import { RedactedFileEncoding } from "./model/fileData";
 import { MaskData } from "./model/maskData";
 import { debug } from "./debug";
 import path from "path";
+import { redactpng } from "./png";
 
-export async function redact(name: string, mask: string, type: FileEncoding) {
+export async function redact(
+  name: string,
+  mask: string,
+  type: RedactedFileEncoding
+) {
   if (debug()) console.log("Redacting file", { name, mask, type });
   const redactedFilename = "./data/redacted_" + path.basename(name);
   const masks: MaskData[] = await loadMask(mask);
@@ -22,7 +27,9 @@ export async function redact(name: string, mask: string, type: FileEncoding) {
     }
     if (debug()) console.log("Redacted text:\n", data);
     await saveText({ data, filename: redactedFilename });
-  }
+  } else if (type === "png") {
+    await redactpng(name, masks, redactedFilename);
+  } else throw new Error(`Unknown redacted file type ${type}`);
 }
 
 export async function redactText(

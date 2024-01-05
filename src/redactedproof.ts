@@ -2,16 +2,19 @@ import { debug } from "./debug";
 import { write } from "./files";
 import { RedactedTree, MinaNFTTreeVerifierFunction } from "minanft";
 import { redactText } from "./redact";
-import { MerkleTree, Field, Encoding, Poseidon, verify } from "o1js";
+import { MerkleTree, Field, Poseidon, verify } from "o1js";
 import fs from "fs/promises";
-import { FileEncoding } from "./model/fileData";
+import { RedactedFileEncoding, FileTreeData } from "./model/fileData";
 import path from "path";
+import { pngFoFields } from "./png";
+
+const BINARY_ZERO = 0;
 
 export async function redactedProof(
   originalFilename: string,
   maskFilename: string | undefined,
   redactedFilename: string | undefined,
-  type: FileEncoding
+  type: RedactedFileEncoding
 ) {
   if (debug())
     console.log("Creating redacted proof:\n", {
@@ -22,22 +25,49 @@ export async function redactedProof(
     });
 
   const name = path.basename(originalFilename);
-  const originalText = await fs.readFile(originalFilename, "utf8");
-  if (originalText === undefined)
-    throw new Error(`Original file ${originalFilename} not found`);
-  const redactedText = await getRedactedText(
-    originalText,
-    maskFilename,
-    redactedFilename
-  );
+  if (type === "text") {
+    const originalText = await fs.readFile(originalFilename, "utf8");
+    if (originalText === undefined)
+      throw new Error(`Original file ${originalFilename} not found`);
+    const redactedText = await getRedactedText(
+      originalText,
+      maskFilename,
+      redactedFilename
+    );
 
-  const proof = await generateRedactedTextProof(originalText, redactedText);
-  await write({
-    data: { filename: name, ...proof },
-    filename: name + ".redacted",
-    type: "proof",
-    allowRewrite: true,
-  });
+    const proof = await generateRedactedTextProof(originalText, redactedText);
+    await write({
+      data: { filename: name, ...proof },
+      filename: name + ".redacted",
+      type: "proof",
+      allowRewrite: true,
+    });
+  } else if (type === "png") {
+    if (maskFilename !== undefined)
+      throw new Error(`Mask file is not supported for png files`);
+    if (redactedFilename === undefined)
+      throw new Error(`Redacted file must be provided for png files`);
+    const originalFields = await pngFoFields(originalFilename);
+    const redactedFields = await pngFoFields(redactedFilename);
+    if (originalFields.length !== redactedFields.length)
+      throw new Error(`Original and redacted files have different length`);
+    const original = loadBinaryTreeFromFields(originalFields);
+    const redacted = loadBinaryTreeFromFields(redactedFields, true);
+    if (original.height !== redacted.height)
+      throw new Error(`Original and redacted trees have different heights`);
+    if (original.leavesNumber !== redacted.leavesNumber)
+      throw new Error(
+        `Original and redacted trees have different number of leaves`
+      );
+    const proof = await generateRedactedBinaryProof(original, redacted);
+    if (debug()) console.log(`png proof`, proof);
+    await write({
+      data: { filename: name, ...proof },
+      filename: name + ".redacted",
+      type: "proof",
+      allowRewrite: true,
+    });
+  } else throw new Error(`Unknown redacted file type ${type}`);
 }
 
 export async function getRedactedText(
@@ -148,16 +178,7 @@ export async function generateRedactedTextProof(
   if (originalText.length === 0) throw new Error(`Original text is empty`);
 
   const original = await loadTextTree(originalText);
-  /*
-  const redacted = await loadTextTree(redactedText);
 
-  if (original.height !== redacted.height)
-    throw new Error(`Original and redacted trees have different heights`);
-  if (original.leavesNumber !== redacted.leavesNumber)
-    throw new Error(
-      `Original and redacted trees have different number of leaves`
-    );
-  */
   const length = original.leavesNumber;
   if (length !== originalText.length + 2)
     throw new Error(
@@ -180,7 +201,7 @@ export async function generateRedactedTextProof(
     } else if (redactedText[i - 2] !== spaceStr)
       throw new Error(`Redacted text is not equal to space at index ${i}`);
   }
-  const proof = await redactedTree.proof();
+  const proof = await redactedTree.proof(debug());
   const proofJSON = proof.toJSON();
   if (debug()) console.log(`proof`, proofJSON);
   return {
@@ -194,32 +215,93 @@ export async function generateRedactedTextProof(
   };
 }
 
-async function loadBinaryTree(filename: string): Promise<{
-  root: Field;
-  height: number;
-  leavesNumber: number;
-  tree: MerkleTree;
-  fields: Field[];
-}> {
+export async function generateRedactedBinaryProof(
+  original: FileTreeData,
+  redacted: FileTreeData
+) {
+  if (debug()) console.log("Creating redacted binary proof:\n");
+
+  if (original.leavesNumber !== redacted.leavesNumber)
+    throw new Error(`Original and redacted files have different length`);
+  if (original.leavesNumber <= 2) throw new Error(`Original file is empty`);
+
+  const redactedTree = new RedactedTree(original.height, original.tree);
+  const zero = Field.from(BINARY_ZERO);
+  if (debug()) console.log(`zero`, zero.toJSON());
+  let count = 2;
+  redactedTree.set(0, original.fields[0]);
+  redactedTree.set(1, original.fields[1]);
+  for (let i = 2; i < original.leavesNumber; i++) {
+    if (
+      original.fields[i].equals(redacted.fields[i]).toBoolean() === true &&
+      redacted.fields[i].equals(zero).toBoolean() === false
+    ) {
+      redactedTree.set(i, original.fields[i]);
+      count++;
+    } else if (redacted.fields[i].equals(zero).toBoolean() === false)
+      throw new Error(
+        `Redacted field ${redacted.fields[
+          i
+        ].toJSON()} is not equal to zero at index ${i}`
+      );
+  }
+  const proof = await redactedTree.proof(debug());
+  const proofJSON = proof.toJSON();
+  if (debug()) console.log(`proof`, proofJSON);
+  return {
+    length: original.leavesNumber,
+    height: original.height,
+    count,
+    originalRoot: original.root.toJSON(),
+    redactedRoot: redactedTree.redactedTree.getRoot().toJSON(),
+    proof: proofJSON,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function loadBinaryTree(
+  filename: string,
+  skipZeros = false
+): Promise<FileTreeData> {
   const fields: Field[] = [];
   let remainder: Uint8Array = new Uint8Array(0);
 
   const file: fs.FileHandle = await fs.open(filename);
   const stream = file.createReadStream();
+
+  function fillFields(bytes: Uint8Array): void {
+    let currentBigInt = BigInt(0);
+    let bitPosition = BigInt(0);
+    for (const byte of bytes) {
+      currentBigInt += BigInt(byte) << bitPosition;
+      bitPosition += BigInt(8);
+      if (bitPosition === BigInt(248)) {
+        fields.push(Field(currentBigInt.toString()));
+        currentBigInt = BigInt(0);
+        bitPosition = BigInt(0);
+      }
+    }
+    if (Number(bitPosition) > 0) fields.push(Field(currentBigInt.toString()));
+  }
   for await (const chunk of stream) {
+    if (debug()) console.log(`chunk`, chunk);
     const bytes: Uint8Array = new Uint8Array(remainder.length + chunk.length);
     if (remainder.length > 0) bytes.set(remainder);
     bytes.set(chunk as Buffer, remainder.length);
-    const chunkSize = Math.floor(bytes.length / 31) * 31;
-    fields.push(...Encoding.bytesToFields(bytes.slice(0, chunkSize)));
+    const fieldsNumber = Math.floor(bytes.length / 31);
+    const chunkSize = fieldsNumber * 31;
+    fillFields(bytes.slice(0, chunkSize));
     remainder = bytes.slice(chunkSize);
   }
-  if (remainder.length > 0) fields.push(...Encoding.bytesToFields(remainder));
+  if (debug()) console.log(`remainder`, remainder.length);
+  if (remainder.length > 0) fillFields(remainder);
 
+  if (debug()) console.log(`fields length`, fields.length);
   const height = Math.ceil(Math.log2(fields.length + 2)) + 1;
   const tree = new MerkleTree(height);
   if (fields.length > tree.leafCount)
     throw new Error(`File is too big for this Merkle tree`);
+
   // First field is the height, second number is the number of fields
   const fields2: Field[] = [
     Field.from(height),
@@ -230,27 +312,85 @@ async function loadBinaryTree(filename: string): Promise<{
   const root = tree.getRoot();
   const leavesNumber = fields2.length;
   stream.close();
+  let count = 2;
+  let hash = Poseidon.hash([Field(0), Field.from(height)]).add(
+    Poseidon.hash([Field(1), Field.from(fields.length)])
+  );
+  const zero = Field.from(BINARY_ZERO).toJSON();
+  for (let i = 0; i < fields.length; i++) {
+    if (skipZeros === false || fields[i].toJSON() !== zero) {
+      count++;
+      hash = hash.add(Poseidon.hash([Field(i + 2), fields[i]]));
+    }
+  }
   if (debug())
     console.log(`Loaded binary tree from ${filename}:\n`, {
       root: root.toJSON(),
       height,
       leavesNumber,
     });
-  return { root, height, leavesNumber, tree, fields: fields2 };
+  return {
+    root,
+    height,
+    leavesNumber,
+    tree,
+    fields: fields2,
+    count,
+    hash,
+  } as FileTreeData;
+}
+
+function loadBinaryTreeFromFields(
+  fields: Field[],
+  skipZeros = false
+): FileTreeData {
+  if (debug()) console.log(`fields length`, fields.length);
+  const height = Math.ceil(Math.log2(fields.length + 2)) + 1;
+  const tree = new MerkleTree(height);
+  if (fields.length > tree.leafCount)
+    throw new Error(`File is too big for this Merkle tree`);
+
+  // First field is the height, second number is the number of fields
+  const fields2: Field[] = [
+    Field.from(height),
+    Field.from(fields.length),
+    ...fields,
+  ];
+  tree.fill(fields2);
+  const root = tree.getRoot();
+  const leavesNumber = fields2.length;
+  let count = 2;
+  let hash = Poseidon.hash([Field(0), Field.from(height)]).add(
+    Poseidon.hash([Field(1), Field.from(fields.length)])
+  );
+  const zero = Field.from(BINARY_ZERO).toJSON();
+  for (let i = 0; i < fields.length; i++) {
+    if (skipZeros === false || fields[i].toJSON() !== zero) {
+      count++;
+      hash = hash.add(Poseidon.hash([Field(i + 2), fields[i]]));
+    }
+  }
+  if (debug())
+    console.log(`Loaded binary tree:\n`, {
+      root: root.toJSON(),
+      height,
+      leavesNumber,
+    });
+  return {
+    root,
+    height,
+    leavesNumber,
+    tree,
+    fields: fields2,
+    count,
+    hash,
+  } as FileTreeData;
 }
 
 async function loadTextTree(
   text: string,
   skipSpaces = false
-): Promise<{
-  root: Field;
-  height: number;
-  leavesNumber: number;
-  tree: MerkleTree;
-  fields: Field[];
-  count: number;
-  hash: Field;
-}> {
+): Promise<FileTreeData> {
   const size = text.length;
   const height = Math.ceil(Math.log2(size + 2)) + 1;
   const tree = new MerkleTree(height);
@@ -285,5 +425,13 @@ async function loadTextTree(
       count,
       hash: hash.toJSON(),
     });
-  return { root, height, leavesNumber, tree, fields, count, hash };
+  return {
+    root,
+    height,
+    leavesNumber,
+    tree,
+    fields,
+    count,
+    hash,
+  } as FileTreeData;
 }

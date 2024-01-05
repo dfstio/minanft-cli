@@ -21,7 +21,7 @@ export const program = new Command();
 program
   .name("minanft")
   .description("Mina NFT CLI tool")
-  .version("1.0.3")
+  .version("1.0.5")
   .option("-p, --password <string>", "password")
   .option("-o, --offline", "offline mode")
   .option("-d, --debug", "debug mode");
@@ -225,19 +225,19 @@ program
   .description("Create redacted file using mask")
   .argument("<name>", "Name of the file")
   .argument("<mask>", "Name of the mask")
-  .option("--binary", "file is binary")
+  .option("--png", "file is png")
   .option("--text", "file is text")
   .action(async (name, mask, options) => {
-    if (options.binary === undefined && options.text === undefined) {
-      console.error(`Please specify --binary or --text`);
+    if (options.png === undefined && options.text === undefined) {
+      console.error(`Please specify --png or --text`);
       return;
     }
-    if (options.binary !== undefined && options.text !== undefined) {
-      console.error(`Please specify --binary or --text`);
+    if (options.png !== undefined && options.text !== undefined) {
+      console.error(`Please specify --png or --text`);
       return;
     }
     console.log(`Creating redacted file using mask...`);
-    await redact(name, mask, options.text === true ? "text" : "binary");
+    await redact(name, mask, options.text === true ? "text" : "png");
   });
 
 program
@@ -255,7 +255,7 @@ program
   .command("redactedproof")
   .description("Create redacted file proof")
   .argument("<name>", "Name of the original file")
-  .option("--binary", "file is binary")
+  .option("--png", "file is png image")
   .option("--text", "file is text")
   .option("--mask <string>", "Mask name, optional if redacted file is used")
   .option("--redacted <string>", "Use redacted file instead of mask")
@@ -269,12 +269,12 @@ program
       console.error(`Please specify --mask or --redacted`);
       return;
     }
-    if (options.binary === undefined && options.text === undefined) {
-      console.error(`Please specify --binary or --text`);
+    if (options.png === undefined && options.text === undefined) {
+      console.error(`Please specify --png or --text`);
       return;
     }
-    if (options.binary !== undefined && options.text !== undefined) {
-      console.error(`Please specify --binary or --text`);
+    if (options.png !== undefined && options.text !== undefined) {
+      console.error(`Please specify --png or --text`);
       return;
     }
     console.log(`Creating redacted file proof...`);
@@ -282,7 +282,7 @@ program
       name,
       options.mask,
       options.redacted,
-      options.text === true ? "text" : "binary"
+      options.text === true ? "text" : "png"
     );
   });
 
