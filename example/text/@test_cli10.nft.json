@@ -1,0 +1,33 @@
+{
+  "filename": "@test_cli10",
+  "type": "nft",
+  "timestamp": 1704453281439,
+  "data": {
+    "name": "@test_cli10",
+    "description": "",
+    "external_url": "https://minanft.io/@test_cli10",
+    "version": "1",
+    "time": 1704453281439,
+    "creator": "MinaNFT CLI tool",
+    "address": "B62qoYq3QK2GRXqPtEzvs7rssBxtG1Tk6e64NrEeZMRWn9JzTPNUbTp",
+    "owner": "18672076960871728091810903718788995205047317650367763350543489514065400543222",
+    "escrow": "0",
+    "metadata": {
+      "data": "15663792548267287975663775051976783882510592534651960357692269071041429434874",
+      "kind": "20019046304277956789355110002442524025054529085499288237693187571851850845781"
+    },
+    "properties": {
+      "price": {
+        "data": "2365733532393454764308234417915471796569395823315175192508429673490940840022",
+        "kind": "text",
+        "isPrivate": true,
+        "linkedObject": {
+          "type": "text",
+          "MerkleTreeHeight": 5,
+          "size": 9,
+          "text": "p 85\nd 5\n"
+        }
+      }
+    }
+  }
+}

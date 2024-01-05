@@ -33,7 +33,7 @@ export async function redactedProof(
 
   const proof = await generateRedactedTextProof(originalText, redactedText);
   await write({
-    data: { filename: name, redactedText, ...proof },
+    data: { filename: name, ...proof },
     filename: name + ".redacted",
     type: "proof",
     allowRewrite: true,
@@ -64,6 +64,15 @@ export async function verifyRedactedProof(name: string) {
   if (data === undefined) throw new Error(`Proof ${name} not found`);
   const proof = JSON.parse(data)?.data;
   if (proof === undefined) throw new Error(`Proof ${name} has wrong format`);
+  const ok = await verifyRedactedProofJSON(proof, name);
+  if (ok) console.log(`Proof ${name} is valid`);
+}
+
+export async function verifyRedactedProofJSON(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  proof: any,
+  name: string
+): Promise<boolean> {
   if (proof.length === undefined)
     throw new Error(`Proof ${name} has wrong format`);
   if (proof.height === undefined)
@@ -87,13 +96,13 @@ export async function verifyRedactedProof(name: string) {
     proof.count !== proof.proof.publicInput[3]
   ) {
     console.error(`Proof ${name} is NOT valid`);
-    return;
+    return false;
   }
   const redacted = await loadTextTree(proof.redactedText, true);
   if (redacted.root.toJSON() !== proof.proof.publicInput[1]) {
     if (debug()) console.log(`redacted.root`, redacted.root.toJSON());
     console.error(`Proof ${name} is NOT valid`);
-    return;
+    return false;
   }
   if (
     redacted.count !== proof.count ||
@@ -107,7 +116,7 @@ export async function verifyRedactedProof(name: string) {
         redacted.hash.toJSON()
       );
     console.error(`Proof ${name} is NOT valid`);
-    return;
+    return false;
   }
   const contracts = MinaNFTTreeVerifierFunction(Number(proof.height));
   console.time(`compiled RedactedTreeCalculation`);
@@ -119,9 +128,9 @@ export async function verifyRedactedProof(name: string) {
   if (debug()) console.log(`proof verification result:`, ok);
   if (!ok) {
     console.error(`Proof ${name} is NOT valid`);
-    return;
+    return false;
   }
-  console.log(`Proof ${name} is valid`);
+  return true;
 }
 
 export async function generateRedactedTextProof(
@@ -178,6 +187,7 @@ export async function generateRedactedTextProof(
     length: originalText.length,
     height: original.height,
     count,
+    redactedText,
     originalRoot: original.root.toJSON(),
     redactedRoot: redactedTree.redactedTree.getRoot().toJSON(),
     proof: proofJSON,

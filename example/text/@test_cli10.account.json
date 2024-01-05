@@ -1,0 +1,9 @@
+{
+  "filename": "@test_cli10",
+  "type": "account",
+  "timestamp": 1704453144898,
+  "data": {
+    "publicKey": "B62qoYq3QK2GRXqPtEzvs7rssBxtG1Tk6e64NrEeZMRWn9JzTPNUbTp",
+    "privateKey": "EKFU5GsaiVwnQ9rH8qo8bKvp1NVqaBdQF78LXhmNw6B4m8ckM3D7"
+  }
+}
