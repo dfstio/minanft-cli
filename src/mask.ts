@@ -1,5 +1,6 @@
 import { write, load, isFileExist } from "./files";
 import { debug } from "./debug";
+import { MaskData } from "./model/maskData";
 
 export async function mask(
   name: string,
@@ -8,7 +9,7 @@ export async function mask(
 ): Promise<void> {
   if (debug()) console.log("Setting mask:\n", { name, start, end });
   try {
-    const data: { start: number; end: number }[] = [];
+    const data: MaskData[] = [];
     data.push({ start: parseInt(start), end: parseInt(end) });
     const oldMasksExist = await isFileExist({ filename: name, type: "mask" });
     if (oldMasksExist) {

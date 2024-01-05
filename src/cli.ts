@@ -6,10 +6,14 @@ import { changePassword } from "./files";
 import { setJWT, exportJWT, setPinataJWT, setArweaveKey } from "./jwt";
 import { proveMap } from "./provemap";
 import { proveFile } from "./provefile";
+import { proveTextFile } from "./provetextfile";
 import { verifyMap } from "./verifymap";
 import { verifyFile } from "./verifyfile";
 import { mask } from "./mask";
 import { redact } from "./redact";
+import { redactedProof, verifyRedactedProof } from "./redactedproof";
+import { regexp } from "./regexp";
+import { debug } from "./debug";
 
 export const program = new Command();
 
@@ -87,6 +91,31 @@ program
         "API mode is not included in the public release due to potential high AWS costs. Please contact support@minanft.io to enable it."
       );
     else await proveFile(name, key);
+  });
+
+program
+  .command("provetextfile")
+  .description("Prove NFT text file")
+  .argument("<name>", "Name of the NFT")
+  .argument("<key>", "Key of the file to prove")
+  .option("--api", "Use MinaNFT API to calculate proofs")
+  .option("--mask <string>", "Use mask to calculate redacted text file proofs")
+  .option("--redacted <string>", "Use redacted file instead of mask")
+  .action(async (name, key, options) => {
+    console.log(`Proving text file ${key} for NFT ${name}...`);
+    if (options.redacted !== undefined && options.mask !== undefined) {
+      console.error(`Please specify --mask or --redacted`);
+      return;
+    }
+    if (options.redacted === undefined && options.mask === undefined) {
+      console.error(`Please specify --mask or --redacted`);
+      return;
+    }
+    if (options.api)
+      console.error(
+        "API mode is not included in the public release due to potential high AWS costs. Please contact support@minanft.io to enable it."
+      );
+    else await proveTextFile(name, key, options.mask, options.redacted);
   });
 
 program
@@ -198,6 +227,61 @@ program
     }
     console.log(`Creating redacted file using mask...`);
     await redact(name, mask, options.text === true ? "text" : "binary");
+  });
+
+program
+  .command("regexp")
+  .description("Create redacted file using regular expression")
+  .argument("<name>", "Name of the file")
+  .argument("<mask>", "Regular expression")
+  .action(async (name, mask) => {
+    console.log(`Creating redacted file using regular expression...`);
+    // minanft regexp ./example/tesla.txt "\d" -d
+    await regexp(name, mask);
+  });
+
+program
+  .command("redactedproof")
+  .description("Create redacted file proof")
+  .argument("<name>", "Name of the original file")
+  .option("--binary", "file is binary")
+  .option("--text", "file is text")
+  .option("--mask <string>", "Mask name, optional if redacted file is used")
+  .option("--redacted <string>", "Use redacted file instead of mask")
+  .action(async (name, options) => {
+    if (debug()) console.log("redactedproof", { name, options });
+    if (options.redacted !== undefined && options.mask !== undefined) {
+      console.error(`Please specify --mask or --redacted`);
+      return;
+    }
+    if (options.redacted === undefined && options.mask === undefined) {
+      console.error(`Please specify --mask or --redacted`);
+      return;
+    }
+    if (options.binary === undefined && options.text === undefined) {
+      console.error(`Please specify --binary or --text`);
+      return;
+    }
+    if (options.binary !== undefined && options.text !== undefined) {
+      console.error(`Please specify --binary or --text`);
+      return;
+    }
+    console.log(`Creating redacted file proof...`);
+    await redactedProof(
+      name,
+      options.mask,
+      options.redacted,
+      options.text === true ? "text" : "binary"
+    );
+  });
+
+program
+  .command("verifyredactedproof")
+  .description("Verify redacted file proof")
+  .argument("<name>", "Name of the proof file")
+  .action(async (name) => {
+    if (debug()) console.log("verifyredactedproof", { name });
+    await verifyRedactedProof(name);
   });
 
 program
