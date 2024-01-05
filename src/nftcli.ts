@@ -2,6 +2,7 @@ import { Command } from "commander";
 import * as readline from "node:readline/promises";
 import { debug } from "./debug";
 import { nft, pinataJWT, arweaveKey, mint } from "./nft";
+import fs from "fs/promises";
 
 export const programNFT = new Command();
 /*
@@ -54,19 +55,26 @@ programNFT
   .option("--ipfs <string>", "IPFS hash of the file")
   .option("--arweave <string>", "Arweave hash of the file")
   .option("--noroot", "Skip calculating Merkle Tree root of the file")
+  .option("--text", "Text file")
   .action(async (key, file, options) => {
-    console.log(`Adding image ${file}...`);
     if (debug()) console.log({ file, options });
-    await nft().updateFile({
-      key,
-      filename: file,
-      pinataJWT,
-      arweaveKey,
-      isPrivate: options.private ?? false,
-      calculateRoot: options.noroot === true ? false : true,
-      IPFSHash: options.ipfs,
-      ArweaveHash: options.arweave,
-    });
+    if (options.text === true) {
+      console.log(`Adding text file ${file}...`);
+      const text = await fs.readFile(file, "utf8");
+      nft().updateText({ key, text, isPrivate: options.private ?? false });
+    } else {
+      console.log(`Adding binary file ${file}...`);
+      await nft().updateFile({
+        key,
+        filename: file,
+        pinataJWT,
+        arweaveKey,
+        isPrivate: options.private ?? false,
+        calculateRoot: options.noroot === true ? false : true,
+        IPFSHash: options.ipfs,
+        ArweaveHash: options.arweave,
+      });
+    }
   });
 
 programNFT

@@ -117,8 +117,7 @@ export async function createNFT(
   try {
     if (debug()) console.log("Creating NFT:\n", { name, owner, arweave });
     useArweave = arweave;
-    console.log("After adding metadata and files, execute mint command.");
-    console.log("To exit without minting, execute exit command.");
+
     const nameData = await load({ filename: name, type: "name" });
     const nftAccount = await getAccount(nameData.account);
     const nftPrivateKey = nftAccount?.privateKey;
@@ -181,6 +180,8 @@ export async function createNFT(
           `Pinata JWT token is not set. Please run 'minanft pinata' command`
         );
     }
+    console.log("After adding metadata and files, execute mint command.");
+    console.log("To exit without minting, execute exit command.");
     await getCommands();
   } catch (e) {
     console.error("Error creating NFT:", e);
