@@ -9,6 +9,7 @@ import { proveFile } from "./provefile";
 import { proveTextFile } from "./provetextfile";
 import { verifyMap } from "./verifymap";
 import { verifyFile } from "./verifyfile";
+import { verifyText } from "./verifytext";
 import { mask } from "./mask";
 import { redact } from "./redact";
 import { redactedProof, verifyRedactedProof } from "./redactedproof";
@@ -128,6 +129,16 @@ program
   .action(async (name, key, file, options) => {
     console.log(`Verifying file ${key} for NFT ${name}...`);
     await verifyFile(name, key, file, options.noroot ?? false);
+  });
+
+program
+  .command("verifytextfile")
+  .description("Verify NFT redacted text file")
+  .argument("<name>", "Name of the NFT")
+  .argument("<key>", "Key of the text to verify")
+  .action(async (name, key) => {
+    console.log(`Verifying text ${key} for NFT ${name}...`);
+    await verifyText(name, key);
   });
 
 program

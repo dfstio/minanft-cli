@@ -17,17 +17,8 @@ export async function proveTextFile(
   redacted: string | undefined
 ) {
   if (debug())
-    console.log("Proving NFT file:\n", { name, key, mask, redacted });
-  const uri = await load({ filename: name, type: "nft" });
-  if (debug()) console.log("NFT metadata:\n", { uri });
-  if (uri === undefined) throw new Error(`NFT ${name} not found`);
-  const fileJSON = getText(uri, key);
-  if (debug()) console.log(`fileJSON`, fileJSON);
-  if (fileJSON === undefined)
-    throw new Error(`File ${key} not found in NFT ${name}`);
-  const textData = TextData.fromJSON(fileJSON.value);
-  if (debug()) console.log(`textData`, textData);
-  const originalText = textData.text;
+    console.log("Proving NFT text:\n", { name, key, mask, redacted });
+  const { originalText, uri, fileJSON } = await getTextByKey(name, key);
   const redactedText = await getRedactedText(originalText, mask, redacted);
   const textProof = await generateRedactedTextProof(originalText, redactedText);
   const nameServiceAddress = PublicKey.fromBase58(MINANFT_NAME_SERVICE);
@@ -64,7 +55,6 @@ export async function proveTextFile(
   const texts = [
     {
       key: fileJSON.key,
-      value: fileJSON.value,
       textProof,
       proof: proof.toJSON(),
     },
@@ -86,6 +76,20 @@ export async function proveTextFile(
   });
 
   console.log(`NFT ${name} file has been proven and written to ${filename}`);
+}
+
+export async function getTextByKey(name: string, key: string) {
+  const uri = await load({ filename: name, type: "nft" });
+  if (debug()) console.log("NFT metadata:\n", { uri });
+  if (uri === undefined) throw new Error(`NFT ${name} not found`);
+  const fileJSON = getText(uri, key);
+  if (debug()) console.log(`fileJSON`, fileJSON);
+  if (fileJSON === undefined)
+    throw new Error(`File ${key} not found in NFT ${name}`);
+  const textData = TextData.fromJSON(fileJSON.value);
+  if (debug()) console.log(`textData`, textData);
+  const originalText = textData.text;
+  return { originalText, uri, fileJSON };
 }
 
 export function getText(
