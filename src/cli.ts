@@ -7,6 +7,7 @@ import { setJWT, exportJWT, setPinataJWT, setArweaveKey } from "./jwt";
 import { proveMap } from "./provemap";
 import { proveFile } from "./provefile";
 import { proveTextFile } from "./provetextfile";
+import { provePNGFile } from "./provepngfile";
 import { verifyMap } from "./verifymap";
 import { verifyFile } from "./verifyfile";
 import { verifyText } from "./verifytext";
@@ -15,6 +16,7 @@ import { redact } from "./redact";
 import { redactedProof, verifyRedactedProof } from "./redactedproof";
 import { regexp } from "./regexp";
 import { debug } from "./debug";
+import { readWord } from "./word";
 
 export const program = new Command();
 
@@ -51,6 +53,15 @@ program
   });
 
 program
+  .command("balance")
+  .description("Check the balance of the existing MINA protocol account")
+  .argument("<name>", "Name of the account")
+  .action(async (name) => {
+    console.log(`Checking the balance of the ${name}...`);
+    await balance(name);
+  });
+
+program
   .command("reserve")
   .description("Reserve NFT name")
   .argument("<name>", "Name of the NFT")
@@ -58,6 +69,18 @@ program
   .action(async (name, account) => {
     console.log(`Reserving NFT name ${name}...`);
     await reserve(name, account);
+  });
+
+program
+  .command("create")
+  .description("Create NFT")
+  .argument("<name>", "Reserved name of the NFT")
+  .argument("[owner]", "Owner account, should have private key")
+  .option("--arweave", "Use Arweave for storage")
+  .option("--creator <string>", "Creator name")
+  .action(async (name, owner, options) => {
+    console.log(`Creating NFT ${name}...`);
+    await createNFT(name, owner, options.arweave ?? false, options.creator);
   });
 
 program
@@ -95,15 +118,15 @@ program
   });
 
 program
-  .command("provetextfile")
-  .description("Prove NFT text file")
+  .command("provetext")
+  .description("Prove NFT text")
   .argument("<name>", "Name of the NFT")
   .argument("<key>", "Key of the file to prove")
   .option("--api", "Use MinaNFT API to calculate proofs")
   .option("--mask <string>", "Use mask to calculate redacted text file proofs")
   .option("--redacted <string>", "Use redacted file instead of mask")
   .action(async (name, key, options) => {
-    console.log(`Proving text file ${key} for NFT ${name}...`);
+    console.log(`Proving text ${key} for NFT ${name}...`);
     if (options.redacted !== undefined && options.mask !== undefined) {
       console.error(`Please specify --mask or --redacted`);
       return;
@@ -120,25 +143,19 @@ program
   });
 
 program
-  .command("verifyfile")
-  .description("Verify NFT file")
+  .command("provepng")
+  .description("Prove NFT png image")
   .argument("<name>", "Name of the NFT")
-  .argument("<key>", "Key of the file to verify")
-  .argument("<file>", "File to verify")
-  .option("--noroot", "Skip calculating Merkle Tree root of the file")
-  .action(async (name, key, file, options) => {
-    console.log(`Verifying file ${key} for NFT ${name}...`);
-    await verifyFile(name, key, file, options.noroot ?? false);
-  });
-
-program
-  .command("verifytextfile")
-  .description("Verify NFT redacted text file")
-  .argument("<name>", "Name of the NFT")
-  .argument("<key>", "Key of the text to verify")
-  .action(async (name, key) => {
-    console.log(`Verifying text ${key} for NFT ${name}...`);
-    await verifyText(name, key);
+  .argument("<key>", "Key of the png file to prove")
+  .argument("<png>", "Redacted png file")
+  .option("--api", "Use MinaNFT API to calculate proofs")
+  .action(async (name, key, png, options) => {
+    console.log(`Proving PNG file ${key} for NFT ${name}...`);
+    if (options.api)
+      console.error(
+        "API mode is not included in the public release due to potential high AWS costs. Please contact support@minanft.io to enable it."
+      );
+    else await provePNGFile(name, key, png);
   });
 
 program
@@ -151,62 +168,25 @@ program
   });
 
 program
-  .command("createnft")
-  .description("Create NFT")
-  .argument("<name>", "Reserved name of the NFT")
-  .argument("[owner]", "Owner account, should have private key")
-  .option("--arweave", "Use Arweave for storage")
-  .option("--creator <string>", "Creator name")
-  .action(async (name, owner, options) => {
-    console.log(`Creating NFT ${name}...`);
-    await createNFT(name, owner, options.arweave ?? false, options.creator);
+  .command("verifyfile")
+  .description("Verify NFT file")
+  .argument("<name>", "Name of the NFT")
+  .argument("<key>", "Key of the file to verify")
+  .argument("<file>", "File to verify")
+  .option("--noroot", "Skip calculating Merkle Tree root of the file")
+  .action(async (name, key, file, options) => {
+    console.log(`Verifying file ${key} for NFT ${name}...`);
+    await verifyFile(name, key, file, options.noroot ?? false);
   });
 
 program
-  .command("exportjwt")
-  .description("Export MinaNFT JWT token")
-  .action(async () => {
-    console.log("Exporting JWT token... ");
-    await exportJWT();
-  });
-
-program
-  .command("balance")
-  .description("Check the balance of the existing MINA protocol account")
-  .argument("<name>", "Name of the account")
-  .action(async (name) => {
-    console.log(`Checking the balance of the ${name}...`);
-    await balance(name);
-  });
-
-program
-  .command("jwt")
-  .description("Set JWT token for the online MinaNFT API")
-  .argument("<jwt", "JWT token. Get it at https://t.me/minanft_bot?start=auth")
-  .action(async (jwt) => {
-    console.log(`Setting JWT token...`);
-    await setJWT(jwt);
-  });
-
-program
-  .command("ipfs")
-  .description("Set Pinata JWT token for the IPFS storage")
-  .argument("<jwt", "Pinata JWT token. Get it at https://pinata.cloud")
-  .action(async (jwt) => {
-    console.log(`Setting Pinata JWT token...`);
-    await setPinataJWT(jwt);
-  });
-
-program
-  .command("arweave")
-  .description("Set Arweave private key for the Arweave storage")
-  .argument(
-    "<key",
-    "Arweave private key. Generate it using Arweave using instructions in README.md"
-  )
-  .action(async (key) => {
-    console.log(`Setting Arweave private key...`);
-    await setArweaveKey(key);
+  .command("verifytext")
+  .description("Verify NFT redacted text file")
+  .argument("<name>", "Name of the NFT")
+  .argument("<key>", "Key of the text to verify")
+  .action(async (name, key) => {
+    console.log(`Verifying text ${key} for NFT ${name}...`);
+    await verifyText(name, key);
   });
 
 program
@@ -290,9 +270,59 @@ program
   .command("verifyredactedproof")
   .description("Verify redacted file proof")
   .argument("<name>", "Name of the proof file")
+  .option("--png <string>", "Redacted PNG file")
+  .action(async (name, options) => {
+    if (debug()) console.log("verifyredactedproof", { name, options });
+    await verifyRedactedProof(name, options.png);
+  });
+
+program
+  .command("jwt")
+  .description("Set JWT token for the online MinaNFT API")
+  .argument("<jwt>", "JWT token. Get it at https://t.me/minanft_bot?start=auth")
+  .action(async (jwt) => {
+    console.log(`Setting JWT token...`);
+    await setJWT(jwt);
+  });
+
+program
+  .command("exportjwt")
+  .description("Export MinaNFT JWT token")
+  .action(async () => {
+    console.log("Exporting JWT token... ");
+    await exportJWT();
+  });
+
+program
+  .command("word")
+  .description("Convert word file to JSON")
+  .description("Verify redacted file proof")
+  .argument("<name>", "Name of the word file")
   .action(async (name) => {
-    if (debug()) console.log("verifyredactedproof", { name });
-    await verifyRedactedProof(name);
+    console.log("Converting word file... ");
+    const text = await readWord(name);
+    console.log(text);
+  });
+
+program
+  .command("ipfs")
+  .description("Set Pinata JWT token for the IPFS storage")
+  .argument("<jwt", "Pinata JWT token. Get it at https://pinata.cloud")
+  .action(async (jwt) => {
+    console.log(`Setting Pinata JWT token...`);
+    await setPinataJWT(jwt);
+  });
+
+program
+  .command("arweave")
+  .description("Set Arweave private key for the Arweave storage")
+  .argument(
+    "<key",
+    "Arweave private key. Generate it using Arweave using instructions in README.md"
+  )
+  .action(async (key) => {
+    console.log(`Setting Arweave private key...`);
+    await setArweaveKey(key);
   });
 
 program

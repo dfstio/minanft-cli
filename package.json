@@ -24,14 +24,17 @@
   },
   "dependencies": {
     "@types/cli-progress": "^3.11.5",
+    "adm-zip": "^0.5.10",
     "axios": "^1.6.3",
     "cli-progress": "^3.12.0",
     "commander": "^11.1.0",
     "jimp": "^0.22.10",
     "minanft": "^1.4.4",
-    "o1js": "^0.15.1"
+    "o1js": "^0.15.1",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0",
     "@types/jest": "^29.5.11",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
