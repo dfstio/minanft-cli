@@ -182,6 +182,17 @@ export async function createNFT(
     }
     console.log("After adding metadata and files, execute mint command.");
     console.log("To exit without minting, execute exit command.");
+    console.log(`
+  Commands:
+  key [options] <key> <value>  Add key-value pair to NFT
+  image [options] <file>       Add image to NFT
+  file [options] <key> <file>  Add file to NFT
+  text [options] <key> <text>  Add text to NFT
+  description <text>           Add description to NFT
+  help [command]               display help for command
+  mint                         Mint NFT
+  exit                         Exit without minting
+    `);
     await getCommands();
   } catch (e) {
     console.error("Error creating NFT:", e);

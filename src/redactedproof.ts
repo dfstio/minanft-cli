@@ -88,17 +88,104 @@ export async function getRedactedText(
   return redactedText;
 }
 
-export async function verifyRedactedProof(name: string) {
+export async function verifyRedactedProof(
+  name: string,
+  png: string | undefined
+) {
   if (debug()) console.log("Verifying redacted proof:\n", { name });
   const data = await fs.readFile(name, "utf8");
   if (data === undefined) throw new Error(`Proof ${name} not found`);
   const proof = JSON.parse(data)?.data;
   if (proof === undefined) throw new Error(`Proof ${name} has wrong format`);
-  const ok = await verifyRedactedProofJSON(proof, name);
-  if (ok) console.log(`Proof ${name} is valid`);
+  if (png === undefined) {
+    const ok = await verifyRedactedTextProofJSON(proof, name);
+    if (ok) console.log(`Proof ${name} is valid`);
+  } else {
+    const ok = await verifyRedactedPNGProofJSON(proof, name, png);
+    if (ok) console.log(`Proof ${name} is valid`);
+  }
 }
 
-export async function verifyRedactedProofJSON(
+export async function verifyRedactedPNGProofJSON(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  proof: any,
+  name: string,
+  png: string
+): Promise<boolean> {
+  /*
+    "length": 30,
+    "height": 6,
+    "count": 15,
+    "originalRoot": "19111215407736447392962954633966993967454133223071387177311565127363332333909",
+    "redactedRoot": "1515893462417911403681054509924994231732480396944012764047484206115367514910",
+    "proof": {
+  */
+  if (proof.length === undefined)
+    throw new Error(`Proof ${name} has wrong format`);
+  if (proof.height === undefined)
+    throw new Error(`Proof ${name} has wrong format`);
+  if (proof.count === undefined)
+    throw new Error(`Proof ${name} has wrong format`);
+  if (proof.originalRoot === undefined)
+    throw new Error(`Proof ${name} has wrong format`);
+  if (proof.redactedRoot === undefined)
+    throw new Error(`Proof ${name} has wrong format`);
+  if (proof.proof === undefined)
+    throw new Error(`Proof ${name} has wrong format`);
+  if (proof.proof.publicInput === undefined)
+    throw new Error(`Proof ${name} has wrong format`);
+  if (
+    proof.originalRoot !== proof.proof.publicInput[0] &&
+    proof.redactedRoot !== proof.proof.publicInput[1] &&
+    proof.count !== proof.proof.publicInput[3]
+  ) {
+    console.error(`Proof ${name} is NOT valid`);
+    return false;
+  }
+
+  const redactedFields = await pngFoFields(png);
+
+  const redacted = loadBinaryTreeFromFields(redactedFields, true);
+  if (proof.height !== redacted.height)
+    throw new Error(`Original and redacted trees have different heights`);
+  if (proof.length !== redacted.leavesNumber)
+    throw new Error(`Proof and redacted files have different length`);
+
+  if (redacted.root.toJSON() !== proof.proof.publicInput[1]) {
+    if (debug()) console.log(`redacted.root`, redacted.root.toJSON());
+    console.error(`Proof ${name} is NOT valid`);
+    return false;
+  }
+  if (
+    redacted.count !== proof.count ||
+    redacted.hash.toJSON() !== proof.proof.publicInput[2]
+  ) {
+    if (debug())
+      console.log(
+        `redacted.count`,
+        redacted.count,
+        `redacted.hash`,
+        redacted.hash.toJSON()
+      );
+    console.error(`Proof ${name} is NOT valid`);
+    return false;
+  }
+  const contracts = MinaNFTTreeVerifierFunction(Number(proof.height));
+  console.time(`compiled RedactedTreeCalculation`);
+  const verificationKey = (
+    await contracts.RedactedMinaNFTTreeCalculation.compile()
+  ).verificationKey;
+  console.timeEnd(`compiled RedactedTreeCalculation`);
+  const ok = await verify(proof.proof, verificationKey);
+  if (debug()) console.log(`proof verification result:`, ok);
+  if (!ok) {
+    console.error(`Proof ${name} is NOT valid`);
+    return false;
+  }
+  return true;
+}
+
+export async function verifyRedactedTextProofJSON(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   proof: any,
   name: string

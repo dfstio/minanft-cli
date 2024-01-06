@@ -17,7 +17,7 @@ import {
   MinaNFTNameServiceContract,
   RedactedMinaNFTMapCalculation,
 } from "minanft";
-import { verifyRedactedProofJSON } from "./redactedproof";
+import { verifyRedactedTextProofJSON } from "./redactedproof";
 
 export async function verifyText(name: string, key: string) {
   try {
@@ -59,7 +59,10 @@ export async function verifyText(name: string, key: string) {
     if (!checkJson) throw new Error(`Proof ${name} is not valid`);
     else
       console.log(`Metadata check for ${name} passed, compiling contracts...`);
-    const checkText = await verifyRedactedProofJSON(proof, name + "." + key);
+    const checkText = await verifyRedactedTextProofJSON(
+      proof,
+      name + "." + key
+    );
     if (!checkText) throw new Error(`Proof for ${name} is not valid`);
 
     const verificationKey = (await RedactedMinaNFTMapCalculation.compile({}))

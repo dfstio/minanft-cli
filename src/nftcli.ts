@@ -2,6 +2,7 @@ import { Command } from "commander";
 import * as readline from "node:readline/promises";
 import { debug } from "./debug";
 import { nft, pinataJWT, arweaveKey, mint } from "./nft";
+import { readWord } from "./word";
 import fs from "fs/promises";
 
 export const programNFT = new Command();
@@ -56,6 +57,7 @@ programNFT
   .option("--arweave <string>", "Arweave hash of the file")
   .option("--noroot", "Skip calculating Merkle Tree root of the file")
   .option("--text", "Text file")
+  .option("--word", "Text file")
   .option("--png", "PNG file")
   .action(async (key, file, options) => {
     if (debug()) console.log({ file, options });
@@ -87,6 +89,15 @@ programNFT
         IPFSHash: options.ipfs,
         ArweaveHash: options.arweave,
       });
+      if (options.word === true) {
+        console.log(`Adding word file text...`);
+        const text = await readWord(file);
+        nft().updateText({
+          key: key.substring(0, 25) + ".text",
+          text,
+          isPrivate: options.private ?? false,
+        });
+      }
     }
   });
 
