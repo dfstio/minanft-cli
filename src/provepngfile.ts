@@ -5,17 +5,53 @@ import {
   MinaNFT,
   RedactedMinaNFT,
   MINANFT_NAME_SERVICE,
-  TextData,
+  FileData,
 } from "minanft";
 import { PublicKey } from "o1js";
-import { getRedactedText, generateRedactedTextProof } from "./redactedproof";
+import {
+  loadBinaryTreeFromFields,
+  generateRedactedBinaryProof,
+} from "./redactedproof";
+import { pngFoFields } from "./png";
 
-export async function provePNGFile(name: string, key: string, png: string) {
-  if (debug()) console.log("Proving NFT png file:\n", { name, key, png });
-  /*
-  const { originalText, uri, fileJSON } = await getTextByKey(name, key);
-  const redactedText = await getRedactedText(originalText, mask, redacted);
-  const textProof = await generateRedactedTextProof(originalText, redactedText);
+export async function provePNGFile(
+  name: string,
+  key: string,
+  originalFilename: string,
+  redactedFilename: string
+) {
+  if (debug())
+    console.log("Proving NFT png file:\n", {
+      name,
+      key,
+      originalFilename,
+      redactedFilename,
+    });
+
+  const { uri, fileJSON } = await getPNGByKey(name, key);
+  if (fileJSON === undefined)
+    throw new Error(`File ${key} not found in NFT ${name}`);
+  const fileData = FileData.fromJSON(fileJSON.value);
+  if (debug()) console.log(`fileData`, fileData);
+  const fileProof = await fileData.proof(debug());
+
+  if (redactedFilename === undefined)
+    throw new Error(`Redacted file must be provided for png files`);
+  const originalFields = await pngFoFields(originalFilename);
+  const redactedFields = await pngFoFields(redactedFilename);
+  if (originalFields.length !== redactedFields.length)
+    throw new Error(`Original and redacted files have different length`);
+  const original = loadBinaryTreeFromFields(originalFields);
+  const redacted = loadBinaryTreeFromFields(redactedFields, true);
+  if (original.height !== redacted.height)
+    throw new Error(`Original and redacted trees have different heights`);
+  if (original.leavesNumber !== redacted.leavesNumber)
+    throw new Error(
+      `Original and redacted trees have different number of leaves`
+    );
+  const pngProof = await generateRedactedBinaryProof(original, redacted);
+  if (debug()) console.log(`png proof`, fileProof);
+
   const nameServiceAddress = PublicKey.fromBase58(MINANFT_NAME_SERVICE);
   let nft: MinaNFT;
   if (offline()) {
@@ -47,10 +83,12 @@ export async function provePNGFile(name: string, key: string, png: string) {
   const proof = await redactedNFT.proof();
   if (debug()) console.log(`proof:`, proof);
 
-  const texts = [
+  const files = [
     {
       key: fileJSON.key,
-      textProof,
+      value: fileJSON.value,
+      pngProof,
+      fileProof: fileProof.toJSON(),
       proof: proof.toJSON(),
     },
   ];
@@ -59,7 +97,7 @@ export async function provePNGFile(name: string, key: string, png: string) {
     name: uri.name,
     version: uri.version,
     address: uri.address,
-    texts,
+    files,
   };
 
   if (debug()) console.log("proofJSON", proofJson);
@@ -71,24 +109,20 @@ export async function provePNGFile(name: string, key: string, png: string) {
   });
 
   console.log(`NFT ${name} file has been proven and written to ${filename}`);
-  */
 }
 
-export async function getTextByKey(name: string, key: string) {
+export async function getPNGByKey(name: string, key: string) {
   const uri = await load({ filename: name, type: "nft" });
   if (debug()) console.log("NFT metadata:\n", { uri });
   if (uri === undefined) throw new Error(`NFT ${name} not found`);
-  const fileJSON = getText(uri, key);
+  const fileJSON = getPNG(uri, key);
   if (debug()) console.log(`fileJSON`, fileJSON);
   if (fileJSON === undefined)
     throw new Error(`File ${key} not found in NFT ${name}`);
-  const textData = TextData.fromJSON(fileJSON.value);
-  if (debug()) console.log(`textData`, textData);
-  const originalText = textData.text;
-  return { originalText, uri, fileJSON };
+  return { uri, fileJSON };
 }
 
-export function getText(
+export function getPNG(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   uri: any,
   file: string
@@ -123,7 +157,7 @@ export function getText(
         throw new Error(
           `uri: NFT metadata: linkedObject should present: ${key} : ${value} kind: ${kind} data: ${data}`
         );
-      if (kind === "text") {
+      if (kind === "file" || kind === "image" || kind === "png") {
         result = { key, value };
       } else
         throw new Error(

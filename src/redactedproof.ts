@@ -61,12 +61,13 @@ export async function redactedProof(
       );
     const proof = await generateRedactedBinaryProof(original, redacted);
     if (debug()) console.log(`png proof`, proof);
-    await write({
+    const filename = await write({
       data: { filename: name, ...proof },
       filename: name + ".redacted",
       type: "proof",
       allowRewrite: true,
     });
+    console.log(`Redacted proof for ${name} has been written to ${filename}`);
   } else throw new Error(`Unknown redacted file type ${type}`);
 }
 
@@ -346,7 +347,7 @@ export async function generateRedactedBinaryProof(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function loadBinaryTree(
+export async function loadBinaryTree(
   filename: string,
   skipZeros = false
 ): Promise<FileTreeData> {
@@ -427,7 +428,7 @@ async function loadBinaryTree(
   } as FileTreeData;
 }
 
-function loadBinaryTreeFromFields(
+export function loadBinaryTreeFromFields(
   fields: Field[],
   skipZeros = false
 ): FileTreeData {

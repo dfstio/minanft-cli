@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import crypto from "crypto";
-import { FileType, FileData, FileEncoding } from "./model/fileData";
+import { FileType, FileData } from "./model/fileData";
 import { debug } from "./debug";
 import { password as getPassword } from "./password";
 

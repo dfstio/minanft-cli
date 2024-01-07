@@ -11,6 +11,7 @@ import { provePNGFile } from "./provepngfile";
 import { verifyMap } from "./verifymap";
 import { verifyFile } from "./verifyfile";
 import { verifyText } from "./verifytext";
+import { verifyPNG } from "./verifypng";
 import { mask } from "./mask";
 import { redact } from "./redact";
 import { redactedProof, verifyRedactedProof } from "./redactedproof";
@@ -147,15 +148,16 @@ program
   .description("Prove NFT png image")
   .argument("<name>", "Name of the NFT")
   .argument("<key>", "Key of the png file to prove")
-  .argument("<png>", "Redacted png file")
+  .argument("<original>", "Original png file")
+  .argument("<redacted", "Redacted png file")
   .option("--api", "Use MinaNFT API to calculate proofs")
-  .action(async (name, key, png, options) => {
+  .action(async (name, key, original, redacted, options) => {
     console.log(`Proving PNG file ${key} for NFT ${name}...`);
     if (options.api)
       console.error(
         "API mode is not included in the public release due to potential high AWS costs. Please contact support@minanft.io to enable it."
       );
-    else await provePNGFile(name, key, png);
+    else await provePNGFile(name, key, original, redacted);
   });
 
 program
@@ -187,6 +189,17 @@ program
   .action(async (name, key) => {
     console.log(`Verifying text ${key} for NFT ${name}...`);
     await verifyText(name, key);
+  });
+
+program
+  .command("verifypng")
+  .description("Verify NFT redacted png file")
+  .argument("<name>", "Name of the NFT")
+  .argument("<key>", "Key of the png to verify")
+  .argument("<png>", "Redacted png file")
+  .action(async (name, key, png) => {
+    console.log(`Verifying png ${key} for NFT ${name}...`);
+    await verifyPNG(name, key, png);
   });
 
 program
@@ -337,20 +350,8 @@ program
     await changePassword(name, type, oldPwd, newPwd);
   });
 
-/*
-program
-  .command("prove")
-  .description("Prove text file content")
-  .argument("<file>", "file")
-  .option("-s, --sanitized <string>", "sanitized text file")
-  .action(async (file, options) => {
-    console.log("Proving content of ", file);
-    await prove(file, options.sanitized ? options.sanitized : "");
-  });
-*/
-
 async function main() {
-  console.log("Mina NFT CLI tool (c) 2024 www.minanft.io\n");
+  console.log("Mina NFT CLI tool (c) DFST 2024 www.minanft.io\n");
   await program.parseAsync();
 }
 
