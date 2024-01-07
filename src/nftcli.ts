@@ -75,7 +75,7 @@ programNFT
         calculateRoot: options.noroot === true ? false : true,
         IPFSHash: options.ipfs,
         ArweaveHash: options.arweave,
-        isPNG: true,
+        fileType: "png",
       });
     } else {
       console.log(`Adding binary file ${file}...`);
@@ -88,6 +88,7 @@ programNFT
         calculateRoot: options.noroot === true ? false : true,
         IPFSHash: options.ipfs,
         ArweaveHash: options.arweave,
+        fileType: options.word === true ? "word" : "binary",
       });
       if (options.word === true) {
         console.log(`Adding word file text...`);

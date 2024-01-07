@@ -72,7 +72,7 @@ export async function reserveName(
   }
 }
 
-export async function reserve(name: string, account: string) {
+export async function reserve(name: string, account: string | undefined) {
   if (debug()) console.log("Reserving NFT name:\n", { name, account });
   const nftName = name[0] === "@" ? name : "@" + name;
   if (account === undefined || account === "") {
@@ -118,7 +118,28 @@ export async function createNFT(
     if (debug()) console.log("Creating NFT:\n", { name, owner, arweave });
     useArweave = arweave;
 
-    const nameData = await load({ filename: name, type: "name" });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let nameData: any = undefined;
+    try {
+      nameData = await load({ filename: name, type: "name" });
+      if (nameData === undefined) {
+        console.log(
+          `Error loading name reservation data, reserving name ${name}...`
+        );
+        await reserve(name, undefined);
+        nameData = await load({ filename: name, type: "name" });
+      }
+    } catch (e) {
+      console.log(
+        `Error loading name reservation data, trying to reserve name ${name} one more time, error:`,
+        e
+      );
+      await reserve(name, undefined);
+      nameData = await load({ filename: name, type: "name" });
+    }
+
+    if (nameData === undefined)
+      throw new Error(`NFT name ${name} not found and cannot be reserved`);
     const nftAccount = await getAccount(nameData.account);
     const nftPrivateKey = nftAccount?.privateKey;
     const nftPublicKey = nftAccount?.publicKey;
