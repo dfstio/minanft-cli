@@ -42,7 +42,7 @@ Commands:
   prove [options] <name>                                Prove NFT metadata
   provefile [options] <name> <key>                      Prove NFT file
   provetext [options] <name> <key>                      Prove NFT text
-  provepng [options] <name> <key> <original> <redacte>  Prove NFT png image
+  provepng [options] <name> <key> <original> <redacted> Prove NFT png image
   verify <name>                                         Verify NFT metadata
   verifyfile [options] <name> <key> <file>              Verify NFT file
   verifytext <name> <key>                               Verify NFT redacted text file
