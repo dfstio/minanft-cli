@@ -1,88 +1,98 @@
 # Mina NFT offline CLI tool
 
-
 ## Installation
 
 You need to install node and git
 and clone this repo
 
-	git clone https://github.com/dfstio/minanft-cli
-	cd minanft-cli
-	yarn
+    git clone https://github.com/dfstio/minanft-cli
+    cd minanft-cli
+    yarn
 
-Make sure that minanft command is executable by running from minanft-cli folder
+Make sure that minanft command is executable by running from the minanft-cli folder
 
-	chmod +x ./src/cli.ts
-	npm link
-
-
-## Run examples:
-```
-// Create proof for sanitized file
-minanft prove -s sanitized.txt test.txt
-// Result:
-Proving content of  test.txt
- ████████████████████████████████████████ 100% | ETA: 0s | 1167/1166
-Took 5 sec or 8 ms per char
-Proof is written to test.txt.json
-
-// Verify proof of sanitized file
-minanft verify test.txt.json
-// Result:
-Verifying...
- ████████████████████████████████████████ 100% | ETA: 0s | 583/583
-Passed true 
-took 5 sec or 8 ms per char
-
-// Generate account
-minanft account
-// Result:
-Mina NFT offline CLI tool (c) 2023 www.minanft.io
-
-Creating account... 
-SnarkyJS loaded
-Created account:
- {
-  privateKey: 'EKF1hkz9LX47B67qBtM872c8GqNk4UFjxiFSAdJ4dyi58Ak6hJmV',
-  publicKey: 'B62qmP8CNnjHHjb7LFX6TrkkLPLLmq6wJcQu1vtTXgMye3divxyz17C',
-  explorer: 'https://berkeley.minaexplorer.com/wallet/B62qmP8CNnjHHjb7LFX6TrkkLPLLmq6wJcQu1vtTXgMye3divxyz17C',
-  salt: '12451526092217142223536597288402454046942356947273816571698560584321730205579'
-}
-
-
-```
-
+    chmod +x ./src/cli.ts
+    npm link
 
 ## Usage:
+
+### minanft commands
+
 ```
-Usage (from minanft-cli folder): minanft [options] [command]
+Usage: minanft [options] [command]
+
+Mina NFT CLI tool
 
 Options:
-  -V, --version           output the version number
-  -h, --help              display help for command
+  -V, --version                                         output the version number
+  -p, --password <string>                               password
+  -o, --offline                                         offline mode
+  -d, --debug                                           debug mode
+  -h, --help                                            display help for command
 
 Commands:
-  account                 Create new MINA protocol account
-  prove [options] <file>  Prove text file content
-  verify <proof>          Verify text file content
-  prepare <file>          Prepare file metadata for NFT creation to verify it on-chain
-  sign <transaction>      Sign transaction
-  help [command]          display help for command
-  
+  createaccount [options] <name>                        Create new MINA protocol account or import
+                                                        existing one
+  exportaccount <name>                                  Export existing MINA protocol account
+  balance <name>                                        Check the balance of the existing MINA protocol
+                                                        account
+  reserve <name> [account]                              Reserve NFT name
+  create [options] <name> [owner]                       Create NFT
+  index <name>                                          Index NFT name for minanft.io frontend
+  prove [options] <name>                                Prove NFT metadata
+  provefile [options] <name> <key>                      Prove NFT file
+  provetext [options] <name> <key>                      Prove NFT text
+  provepng [options] <name> <key> <original> <redacte>  Prove NFT png image
+  verify <name>                                         Verify NFT metadata
+  verifyfile [options] <name> <key> <file>              Verify NFT file
+  verifytext <name> <key>                               Verify NFT redacted text file
+  verifypng <name> <key> <png>                          Verify NFT redacted png file
+  mask <name> <star> <end>                              Create or update file mask
+  redact [options] <name> <mask>                        Create redacted file using mask
+  regexp <name> <mask>                                  Create redacted file using regular expression
+  redactedproof [options] <name>                        Create redacted file proof
+  verifyredactedproof [options] <name>                  Verify redacted file proof
+  jwt <jwt>                                             Set JWT token for the online MinaNFT API
+  exportjwt                                             Export MinaNFT JWT token
+  word <name>                                           Verify redacted file proof
+  ipfs <jw>                                             Set Pinata JWT token for the IPFS storage
+  arweave <ke>                                          Set Arweave private key for the Arweave storage
+  changepassword <name> <type> <oldPwd> <newPwd>        Change password for existing file
+  help [command]                                        display help for command
 
 ```
 
+### create subcommands
+
+```
+  Commands:
+  key [options] <key> <value>  Add key-value pair to NFT
+  image [options] <file>       Add image to NFT
+  file [options] <key> <file>  Add file to NFT
+  text [options] <key> <text>  Add text to NFT
+  description <text>           Add description to NFT
+  help [command]               display help for command
+  mint                         Mint NFT
+  exit                         Exit without minting
+
+```
+
+## Documentation
+
+https://docs.minanft.io
+
+## MinaNFT CLI tool repo
+
+https://github.com/dfstio/minanft-cli
+
 ## Website
+
 https://minanft.io
 
 ## Library
+
 https://www.npmjs.com/package/minanft
 
-## Faucet 
+## Faucet
+
 https://faucet.minaprotocol.com
-
-
-
-
-
-
