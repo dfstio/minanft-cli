@@ -54,7 +54,7 @@ Commands:
   verifyredactedproof [options] <name>                  Verify redacted file proof
   jwt <jwt>                                             Set JWT token for the online MinaNFT API
   exportjwt                                             Export MinaNFT JWT token
-  word <name>                                           Verify redacted file proof
+  word <name>                                           Convert word file to text
   ipfs <jw>                                             Set Pinata JWT token for the IPFS storage
   arweave <ke>                                          Set Arweave private key for the Arweave storage
   changepassword <name> <type> <oldPwd> <newPwd>        Change password for existing file
