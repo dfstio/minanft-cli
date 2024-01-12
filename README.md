@@ -1,5 +1,31 @@
 # Mina NFT offline CLI tool
 
+## Features
+
+- Reserve the NFT name using MinaNFT API (online mode) or frontend helper (offline mode)
+- Create NFT locally (online mode) or locally with prepared in-advance IPFS or Arweave hashes (offline mode)
+- Mint the NFT locally (online mode) or using frontend helper (offline mode)
+- Add to the NFT during creation:
+  - Public or private key-value pairs
+  - Texts
+  - Text, PNG, Word or binary files
+- Indexing new NFT for the frontend (online only)
+- Creating the masks for redacting the text or png files
+- Redact text files using regular expressions
+- Redact text and png files using masks
+- Creating and verifying proofs for texts and files
+- Creating and verifying proofs for redacted text and png files
+- Setting configuration:
+  - MinaNFT API JWT
+  - IPFS Pintata JWS
+  - Arweave key
+- Encryption of user's data using user's password
+- MINA accounts
+  - Creating MINA account
+  - Importing MINA account by using private or public key
+  - Checking account balance (online only)
+  - Exporting private and public keys of the account
+
 ## Installation
 
 You need to install node and git
@@ -42,7 +68,7 @@ Commands:
   prove [options] <name>                                Prove NFT metadata
   provefile [options] <name> <key>                      Prove NFT file
   provetext [options] <name> <key>                      Prove NFT text
-  provepng [options] <name> <key> <original> <redacte>  Prove NFT png image
+  provepng [options] <name> <key> <original> <redacted> Prove NFT png image
   verify <name>                                         Verify NFT metadata
   verifyfile [options] <name> <key> <file>              Verify NFT file
   verifytext <name> <key>                               Verify NFT redacted text file
@@ -54,7 +80,7 @@ Commands:
   verifyredactedproof [options] <name>                  Verify redacted file proof
   jwt <jwt>                                             Set JWT token for the online MinaNFT API
   exportjwt                                             Export MinaNFT JWT token
-  word <name>                                           Verify redacted file proof
+  word <name>                                           Convert word file to text
   ipfs <jw>                                             Set Pinata JWT token for the IPFS storage
   arweave <ke>                                          Set Arweave private key for the Arweave storage
   changepassword <name> <type> <oldPwd> <newPwd>        Change password for existing file
