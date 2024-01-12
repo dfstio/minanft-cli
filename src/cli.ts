@@ -308,8 +308,7 @@ program
 
 program
   .command("word")
-  .description("Convert word file to JSON")
-  .description("Verify redacted file proof")
+  .description("Convert word file to text")
   .argument("<name>", "Name of the word file")
   .action(async (name) => {
     console.log("Converting word file... ");
