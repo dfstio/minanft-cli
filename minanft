@@ -1,2 +1,0 @@
-#!/bin/sh
-exec "/Users/mike/.asdf/installs/nodejs/20.8.1/bin/node"  "$@"
