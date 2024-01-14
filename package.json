@@ -19,7 +19,12 @@
   "license": "Apache-2.0",
   "scripts": {
     "cli": "ts-node src/cli.ts",
-    "build-mac": "pkg . -t node16-macos-arm64  -o ./build/mac/arm/minanft",
+    "compile": "rm -rf dist && tsc",
+    "build": "node --experimental-sea-config cli-config.json",
+    "minanft": "cp $(command -v node) minanft",
+    "codesign": "codesign --remove-signature minanft",
+    "postject": "npx postject minanft NODE_SEA_BLOB cli.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA",
+    "build-mac": "pkg . -t node18-macos-arm64  -o ./build/mac/arm/minanft",
     "build-linux": "pkg . -t node18-linux-arm64 -o ./build/linux/arm/minanft",
     "chmod-mac": "chmod +x ./build/mac/arm/minanft"
   },

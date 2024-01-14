@@ -1,0 +1,7 @@
+{
+  "main": "./dist/src/cli.js",
+  "output": "cli.blob",
+  "disableExperimentalSEAWarning": true,
+  "useSnapshot": false,
+  "useCodeCache": true
+}
