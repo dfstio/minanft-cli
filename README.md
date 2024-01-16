@@ -85,8 +85,8 @@ Commands:
   jwt <jwt>                                             Set JWT token for the online MinaNFT API
   exportjwt                                             Export MinaNFT JWT token
   word <name>                                           Convert word file to text
-  ipfs <jw>                                             Set Pinata JWT token for the IPFS storage
-  arweave <ke>                                          Set Arweave private key for the Arweave storage
+  ipfs <jwt>                                            Set Pinata JWT token for the IPFS storage
+  arweave <key>                                         Set Arweave private key for the Arweave storage
   changepassword <name> <type> <oldPwd> <newPwd>        Change password for existing file
   help [command]                                        display help for command
 

@@ -319,7 +319,7 @@ program
 program
   .command("ipfs")
   .description("Set Pinata JWT token for the IPFS storage")
-  .argument("<jwt", "Pinata JWT token. Get it at https://pinata.cloud")
+  .argument("<jwt>", "Pinata JWT token. Get it at https://pinata.cloud")
   .action(async (jwt) => {
     console.log(`Setting Pinata JWT token...`);
     await setPinataJWT(jwt);
@@ -329,7 +329,7 @@ program
   .command("arweave")
   .description("Set Arweave private key for the Arweave storage")
   .argument(
-    "<key",
+    "<key>",
     "Arweave private key. Generate it using Arweave using instructions in README.md"
   )
   .action(async (key) => {
