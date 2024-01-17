@@ -143,9 +143,23 @@ export async function getCommands() {
       console.log("Minting...");
       await mint();
     } else {
-      const commandArr = command.split(" ");
+      const commandArr = command.split(
+        /(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/
+      );
+      const commands: string[] = [];
+      for (const command of commandArr) {
+        if (command.startsWith('"')) {
+          commands.push(command.substring(1, command.length - 1));
+        } else {
+          commands.push(command);
+        }
+      }
+      //const commandArr = command.split(" ");
+      //const pattern = @"(?<=(\s|\b)\"")[^""]+(?=(\s|\b)\"")|(?<=\s|\b)[^""\s]+?(?=\s|\b)";
+      //const commandArr = Regex.Matches(text, pattern).Cast<Match>().Select(x => x.ToString()).ToArray();
+      if (debug()) console.log("Parsed command:", commands);
       try {
-        await programNFT.parseAsync(commandArr, { from: "user" });
+        await programNFT.parseAsync(commands, { from: "user" });
       } catch (e) {
         console.error("Error:", e);
       }

@@ -31,14 +31,18 @@
 You need to install node and git
 and clone this repo
 
+```
     git clone https://github.com/dfstio/minanft-cli
     cd minanft-cli
     yarn
+```
 
 Make sure that minanft command is executable by running from the minanft-cli folder
 
+```
     chmod +x ./src/cli.ts
     npm link
+```
 
 ## Usage:
 
@@ -81,8 +85,8 @@ Commands:
   jwt <jwt>                                             Set JWT token for the online MinaNFT API
   exportjwt                                             Export MinaNFT JWT token
   word <name>                                           Convert word file to text
-  ipfs <jw>                                             Set Pinata JWT token for the IPFS storage
-  arweave <ke>                                          Set Arweave private key for the Arweave storage
+  ipfs <jwt>                                            Set Pinata JWT token for the IPFS storage
+  arweave <key>                                         Set Arweave private key for the Arweave storage
   changepassword <name> <type> <oldPwd> <newPwd>        Change password for existing file
   help [command]                                        display help for command
 
