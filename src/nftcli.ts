@@ -76,6 +76,7 @@ programNFT
         IPFSHash: options.ipfs,
         ArweaveHash: options.arweave,
         fileType: "png",
+        isPrivate: options.private ?? false,
       });
     } else {
       console.log(`Adding binary file ${file}...`);
