@@ -24,7 +24,7 @@ export async function proveMap(name: string, keys: string[]) {
     if (debug())
       console.log(`loadedJson:`, JSON.stringify(loadedJson, null, 2));
   } else {
-    MinaNFT.minaInit("testworld2");
+    MinaNFT.minaInit("berkeley");
     nft = new MinaNFT({
       name: uri.name,
       address: PublicKey.fromBase58(uri.address),
