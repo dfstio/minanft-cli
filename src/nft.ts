@@ -243,7 +243,7 @@ export async function mint() {
         await write({ filename: nft().name, type: "nft", data: uri });
       }
     } else {
-      MinaNFT.minaInit("testworld2");
+      MinaNFT.minaInit("berkeley");
       const deployer = await getAccount("deployer");
       if (deployer === undefined) throw new Error("Deployer account not found");
       if (deployer.privateKey === undefined || deployer.privateKey === "")

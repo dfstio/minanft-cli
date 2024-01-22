@@ -4023,7 +4023,7 @@ __metadata:
     eslint: "npm:^8.56.0"
     jest: "npm:^29.7.0"
     jimp: "npm:^0.22.10"
-    minanft: "npm:^1.4.14"
+    minanft: "npm:^1.5.1"
     o1js: "npm:^0.15.1"
     prettier: "npm:3.1.1"
     ts-jest: "npm:^29.1.1"
@@ -4034,9 +4034,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"minanft@npm:^1.4.14":
-  version: 1.4.14
-  resolution: "minanft@npm:1.4.14"
+"minanft@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "minanft@npm:1.5.1"
   dependencies:
     arweave: "npm:^1.14.4"
     axios: "npm:^1.6.2"
@@ -4047,7 +4047,7 @@ __metadata:
     tslib: "npm:^2.6.2"
   peerDependencies:
     o1js: ^0.15.1
-  checksum: 672a0629b25d18b09527549b1a392903fe893f9a97afbcf42c9fc02dff2a32c297c4ce6535d004d7d98992d43ce1e63bbe10fa5e8d99abd7fb03a35e2db30fc0
+  checksum: 126a89eaa0270328561094d48d55053aa2f393d4590d74c2d883f06333ef67f0dace90fd99122f4bb05c25a54ef255859e76cdb2258ed3ca3c37309b4df470db
   languageName: node
   linkType: hard
 

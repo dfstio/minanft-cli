@@ -145,7 +145,7 @@ async function check(
     return false;
   }
   if (!offline()) {
-    MinaNFT.minaInit("testworld2");
+    MinaNFT.minaInit("berkeley");
     const nameServiceAddress = PublicKey.fromBase58(MINANFT_NAME_SERVICE);
     const zkNames = new MinaNFTNameServiceContract(nameServiceAddress);
     const zkApp = new MinaNFTContract(

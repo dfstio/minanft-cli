@@ -1,0 +1,95 @@
+{
+  "filename": "@offline",
+  "type": "nft",
+  "timestamp": 1705484060565,
+  "data": {
+    "name": "@offline",
+    "description": "This NFT was created offline",
+    "image": "https://gateway.pinata.cloud/ipfs/QmbodGtxe3BiCjYLs3DcsrqcscdhXcGRG8NijcRSCmB2ex",
+    "external_url": "https://minanft.io/@offline",
+    "version": "1",
+    "time": 1705484060565,
+    "creator": "MinaNFT CLI tool",
+    "address": "B62qpsYSh34c5NypkgdtkGVtdFyiK2kDUzPji1mcwjdMCLejJb1nvFE",
+    "owner": "27343392011037616037818062156561801854941196056373877698490680976047231132515",
+    "escrow": "0",
+    "metadata": {
+      "data": "22696145003908796784509245093084305165226967216209683238654954909552456695405",
+      "kind": "21977901041237914382305606430199431508712832278915308268853162090425724913646"
+    },
+    "properties": {
+      "secret": {
+        "data": "hgjfdgjkfdhgkjgdfh",
+        "kind": "string",
+        "isPrivate": true
+      },
+      "created_offline": {
+        "data": "true",
+        "kind": "string",
+        "isPrivate": true
+      },
+      "description": {
+        "data": "22714240861602932680761991579952532618513531727959532044395154691412548511836",
+        "kind": "text",
+        "linkedObject": {
+          "type": "text",
+          "MerkleTreeHeight": 6,
+          "size": 28,
+          "text": "This NFT was created offline"
+        }
+      },
+      "textexample": {
+        "data": "11517401793606904866093671010366321577942272347407865739164792317228906589393",
+        "kind": "text",
+        "linkedObject": {
+          "type": "text",
+          "MerkleTreeHeight": 6,
+          "size": 25,
+          "text": "Text can be of any length"
+        }
+      },
+      "privatetext": {
+        "data": "4103096394763970300651860317856779777783930840598382202646600883168318750102",
+        "kind": "text",
+        "isPrivate": true,
+        "linkedObject": {
+          "type": "text",
+          "MerkleTreeHeight": 6,
+          "size": 20,
+          "text": "This is private text"
+        }
+      },
+      "image": {
+        "data": "11677757502084303367629333690466380350832818297882363054388891017593636926734",
+        "kind": "image",
+        "linkedObject": {
+          "fileMerkleTreeRoot": "0",
+          "MerkleTreeHeight": 0,
+          "size": 1974707,
+          "mimeType": "image/png",
+          "SHA3_512": "A5i1m5Tp/5AGyxb4ic7o0GP8VW2kYA0q7uEQQWhyv8SWv7aTprzosepq6indOk8VUL6UM6dUcy7AlSn48Cu4rg==",
+          "filename": "offline.png",
+          "storage": "i:QmbodGtxe3BiCjYLs3DcsrqcscdhXcGRG8NijcRSCmB2ex",
+          "fileType": "binary",
+          "metadata": "0"
+        }
+      },
+      "punk": {
+        "data": "25127634293724085214256406669741172241760502770731549156508701662948098058533",
+        "kind": "file",
+        "isPrivate": true,
+        "linkedObject": {
+          "fileMerkleTreeRoot": "3569969939513084891450541307009279139165192175770036115576543280681080367085",
+          "MerkleTreeHeight": 13,
+          "size": 4206,
+          "mimeType": "image/png",
+          "SHA3_512": "lW6pqy2/jhHAJl7rpcviqx1nVH62lvGNNHfshVbdKUmGLZMT06MnA3h281w7zxtqIzm3dHsdi9lkAK+8E83YVg==",
+          "filename": "punk1.png",
+          "storage": "",
+          "fileType": "png",
+          "metadata": "0"
+        }
+      }
+    }
+  }
+}
