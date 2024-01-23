@@ -17,6 +17,7 @@ import {
   MinaNFTNameServiceContract,
   RedactedMinaNFTMapCalculation,
 } from "minanft";
+import { init } from "./mina";
 
 export async function verifyMap(name: string) {
   try {
@@ -88,7 +89,7 @@ async function check(json: any) {
     return false;
   }
   if (!offline()) {
-    MinaNFT.minaInit("berkeley");
+    init();
     const nameServiceAddress = PublicKey.fromBase58(MINANFT_NAME_SERVICE);
     const zkNames = new MinaNFTNameServiceContract(nameServiceAddress);
     const zkApp = new MinaNFTContract(

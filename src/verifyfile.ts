@@ -22,6 +22,7 @@ import {
   FILE_TREE_ELEMENTS,
   MinaNFTTreeVerifierFunction,
 } from "minanft";
+import { init } from "./mina";
 
 export async function verifyFile(
   name: string,
@@ -189,7 +190,7 @@ async function check(
     return false;
   }
   if (!offline()) {
-    MinaNFT.minaInit("berkeley");
+    init();
     const nameServiceAddress = PublicKey.fromBase58(MINANFT_NAME_SERVICE);
     const zkNames = new MinaNFTNameServiceContract(nameServiceAddress);
     const zkApp = new MinaNFTContract(

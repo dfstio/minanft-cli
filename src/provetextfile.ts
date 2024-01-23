@@ -9,6 +9,7 @@ import {
 } from "minanft";
 import { PublicKey } from "o1js";
 import { getRedactedText, generateRedactedTextProof } from "./redactedproof";
+import { init } from "./mina";
 
 export async function proveTextFile(
   name: string,
@@ -33,7 +34,7 @@ export async function proveTextFile(
     if (debug())
       console.log(`loadedJson:`, JSON.stringify(loadedJson, null, 2));
   } else {
-    MinaNFT.minaInit("berkeley");
+    init();
     nft = new MinaNFT({
       name: uri.name,
       address: PublicKey.fromBase58(uri.address),
