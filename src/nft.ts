@@ -15,6 +15,7 @@ import { createAccount } from "./account";
 import { offline } from "./offline";
 import { getCommands } from "./nftcli";
 import { PublicKey, PrivateKey, Poseidon, Field, Signature } from "o1js";
+import { init } from "./mina";
 
 let minaNFT: MinaNFT | undefined;
 export let arweaveKey: string | undefined;
@@ -243,7 +244,7 @@ export async function mint() {
         await write({ filename: nft().name, type: "nft", data: uri });
       }
     } else {
-      MinaNFT.minaInit("berkeley");
+      init();
       const deployer = await getAccount("deployer");
       if (deployer === undefined) throw new Error("Deployer account not found");
       if (deployer.privateKey === undefined || deployer.privateKey === "")

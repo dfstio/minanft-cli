@@ -8,6 +8,7 @@ import {
   FileData,
 } from "minanft";
 import { PublicKey } from "o1js";
+import { init } from "./mina";
 
 export async function proveFile(name: string, file: string) {
   if (debug()) console.log("Proving NFT file:\n", { name, file });
@@ -34,7 +35,7 @@ export async function proveFile(name: string, file: string) {
     if (debug())
       console.log(`loadedJson:`, JSON.stringify(loadedJson, null, 2));
   } else {
-    MinaNFT.minaInit("berkeley");
+    init();
     nft = new MinaNFT({
       name: uri.name,
       address: PublicKey.fromBase58(uri.address),

@@ -13,6 +13,7 @@ import {
   generateRedactedBinaryProof,
 } from "./redactedproof";
 import { pngFoFields } from "./png";
+import { init } from "./mina";
 
 export async function provePNGFile(
   name: string,
@@ -64,7 +65,7 @@ export async function provePNGFile(
     if (debug())
       console.log(`loadedJson:`, JSON.stringify(loadedJson, null, 2));
   } else {
-    MinaNFT.minaInit("berkeley");
+    init();
     nft = new MinaNFT({
       name: uri.name,
       address: PublicKey.fromBase58(uri.address),

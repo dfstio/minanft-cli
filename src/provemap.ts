@@ -3,6 +3,7 @@ import { load, save } from "./files";
 import { offline } from "./offline";
 import { MinaNFT, RedactedMinaNFT, MINANFT_NAME_SERVICE } from "minanft";
 import { PublicKey } from "o1js";
+import { init } from "./mina";
 
 export async function proveMap(name: string, keys: string[]) {
   if (keys.length === 0) throw new Error("No keys to prove");
@@ -24,7 +25,7 @@ export async function proveMap(name: string, keys: string[]) {
     if (debug())
       console.log(`loadedJson:`, JSON.stringify(loadedJson, null, 2));
   } else {
-    MinaNFT.minaInit("berkeley");
+    init();
     nft = new MinaNFT({
       name: uri.name,
       address: PublicKey.fromBase58(uri.address),
