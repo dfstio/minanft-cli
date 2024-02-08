@@ -1360,13 +1360,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^29.5.11":
-  version: 29.5.11
-  resolution: "@types/jest@npm:29.5.11"
+"@types/jest@npm:^29.5.12":
+  version: 29.5.12
+  resolution: "@types/jest@npm:29.5.12"
   dependencies:
     expect: "npm:^29.0.0"
     pretty-format: "npm:^29.0.0"
-  checksum: 524a3394845214581278bf4d75055927261fbeac7e1a89cd621bd0636da37d265fe0a85eac58b5778758faad1cbd7c7c361dfc190c78ebde03a91cce33463261
+  checksum: 25fc8e4c611fa6c4421e631432e9f0a6865a8cb07c9815ec9ac90d630271cad773b2ee5fe08066f7b95bebd18bb967f8ce05d018ee9ab0430f9dfd1d84665b6f
   languageName: node
   linkType: hard
 
@@ -1751,14 +1751,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.2, axios@npm:^1.6.3":
-  version: 1.6.3
-  resolution: "axios@npm:1.6.3"
+"axios@npm:^1.6.7":
+  version: 1.6.7
+  resolution: "axios@npm:1.6.7"
   dependencies:
-    follow-redirects: "npm:^1.15.0"
+    follow-redirects: "npm:^1.15.4"
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
-  checksum: dcc6d982353db33e6893ef01cdf81d0a0548dbd8fba0cb046dc4aee1a6a16226721faa4c2a13b2673d47130509629cdb93bb991b3a2bd4ef17a5ac27a8bba0da
+  checksum: 131bf8e62eee48ca4bd84e6101f211961bf6a21a33b95e5dfb3983d5a2fe50d9fffde0b57668d7ce6f65063d3dc10f2212cbcb554f75cfca99da1c73b210358d
   languageName: node
   linkType: hard
 
@@ -2675,13 +2675,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.0":
-  version: 1.15.4
-  resolution: "follow-redirects@npm:1.15.4"
+"follow-redirects@npm:^1.15.4":
+  version: 1.15.5
+  resolution: "follow-redirects@npm:1.15.5"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: 5f37ed9170c9eb19448c5418fdb0f2b73f644b5364834e70791a76ecc7db215246f9773bbef4852cfae4067764ffc852e047f744b661b0211532155b73556a6a
+  checksum: 418d71688ceaf109dfd6f85f747a0c75de30afe43a294caa211def77f02ef19865b547dfb73fde82b751e1cc507c06c754120b848fe5a7400b0a669766df7615
   languageName: node
   linkType: hard
 
@@ -4013,20 +4013,20 @@ __metadata:
   dependencies:
     "@types/adm-zip": "npm:^0.5.5"
     "@types/cli-progress": "npm:^3.11.5"
-    "@types/jest": "npm:^29.5.11"
+    "@types/jest": "npm:^29.5.12"
     "@typescript-eslint/eslint-plugin": "npm:^6.17.0"
     "@typescript-eslint/parser": "npm:^6.17.0"
     adm-zip: "npm:^0.5.10"
-    axios: "npm:^1.6.3"
+    axios: "npm:^1.6.7"
     cli-progress: "npm:^3.12.0"
     commander: "npm:^11.1.0"
     eslint: "npm:^8.56.0"
     jest: "npm:^29.7.0"
     jimp: "npm:^0.22.10"
-    minanft: "npm:^1.5.1"
-    o1js: "npm:^0.15.1"
-    prettier: "npm:3.1.1"
-    ts-jest: "npm:^29.1.1"
+    minanft: "npm:^1.6.4"
+    o1js: "npm:^0.16.0"
+    prettier: "npm:3.2.5"
+    ts-jest: "npm:^29.1.2"
     typescript: "npm:^5.3.3"
     xml-js: "npm:^1.6.11"
   bin:
@@ -4034,20 +4034,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"minanft@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "minanft@npm:1.5.1"
+"minanft@npm:^1.6.4":
+  version: 1.6.4
+  resolution: "minanft@npm:1.6.4"
   dependencies:
     arweave: "npm:^1.14.4"
-    axios: "npm:^1.6.2"
+    axios: "npm:^1.6.7"
     form-data: "npm:^4.0.0"
     jimp: "npm:^0.22.10"
     mime: "npm:^3.0.0"
-    o1js: "npm:^0.15.1"
-    tslib: "npm:^2.6.2"
   peerDependencies:
-    o1js: ^0.15.1
-  checksum: 126a89eaa0270328561094d48d55053aa2f393d4590d74c2d883f06333ef67f0dace90fd99122f4bb05c25a54ef255859e76cdb2258ed3ca3c37309b4df470db
+    o1js: ^0.16.0
+  checksum: eeec7e940ce0daa7464d3f6268ee377c5a02d7999cc574ab0a76d5a776bf2df8102923082e1f7a413e83b39786c99135f70a8142be6ed01c5025ec3eaf34d7cc
   languageName: node
   linkType: hard
 
@@ -4265,9 +4263,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"o1js@npm:^0.15.1":
-  version: 0.15.1
-  resolution: "o1js@npm:0.15.1"
+"o1js@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "o1js@npm:0.16.0"
   dependencies:
     blakejs: "npm:1.2.1"
     cachedir: "npm:^2.4.0"
@@ -4278,7 +4276,7 @@ __metadata:
     tslib: "npm:^2.3.0"
   bin:
     snarky-run: src/build/run.js
-  checksum: e8f6a7c99802f7986003ff4d24a22835795a1b24d58bbf186350a896921908d74096a13915611599883f25fa3a8ca227ab3a7e45667b5ef11562671d98cea1eb
+  checksum: 5303c15a56fcf48519bf396adc00969179722d2892138323a17a2de5c5ab0c7cd6a4812f539b896884e77e3cc514b69e311373de0dfa944bc63452d97388bb5f
   languageName: node
   linkType: hard
 
@@ -4553,12 +4551,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.1.1":
-  version: 3.1.1
-  resolution: "prettier@npm:3.1.1"
+"prettier@npm:3.2.5":
+  version: 3.2.5
+  resolution: "prettier@npm:3.2.5"
   bin:
     prettier: bin/prettier.cjs
-  checksum: facc944ba20e194ff4db765e830ffbcb642803381f0d2033ed397e79904fa4ccc877dc25ad68f42d36985c01d051c990ca1b905fb83d2d7d65fe69e4386fa1a3
+  checksum: ea327f37a7d46f2324a34ad35292af2ad4c4c3c3355da07313339d7e554320f66f65f91e856add8530157a733c6c4a897dc41b577056be5c24c40f739f5ee8c6
   languageName: node
   linkType: hard
 
@@ -5147,9 +5145,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.1.1":
-  version: 29.1.1
-  resolution: "ts-jest@npm:29.1.1"
+"ts-jest@npm:^29.1.2":
+  version: 29.1.2
+  resolution: "ts-jest@npm:29.1.2"
   dependencies:
     bs-logger: "npm:0.x"
     fast-json-stable-stringify: "npm:2.x"
@@ -5176,11 +5174,11 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: 6c45e0aeeff9cc54a64f931c43e1b99f4a1f0ddf44786cc128e7e55603ab7473c8c8f62fd83bd7e51bfe83e3c0c683132152efaeb844516bf7c923f4e92d157d
+  checksum: c2f51f0241f89d127d41392decbcb83b5dfd5e57ab9d50220aa7b7e2f9b3f3b07ccdbba33311284df1c41941879e4ddfad44b15a9d0da4b74bd1b98702b729df
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.3.0, tslib@npm:^2.6.2":
+"tslib@npm:^2.3.0":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: e03a8a4271152c8b26604ed45535954c0a45296e32445b4b87f8a5abdb2421f40b59b4ca437c4346af0f28179780d604094eb64546bee2019d903d01c6c19bdb

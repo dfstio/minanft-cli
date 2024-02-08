@@ -24,7 +24,7 @@ export const program = new Command();
 program
   .name("minanft")
   .description("Mina NFT CLI tool")
-  .version("1.0.5")
+  .version("1.0.6")
   .option("-p, --password <string>", "password")
   .option("-o, --offline", "offline mode")
   .option("-d, --debug", "debug mode");
