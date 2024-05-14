@@ -21,15 +21,92 @@ const redactedproof_1 = require("./redactedproof");
 const regexp_1 = require("./regexp");
 const debug_1 = require("./debug");
 const word_1 = require("./word");
-const blocks_1 = require("./blocks");
+const blocks_1 = require("./rollup/blocks");
+const prove_1 = require("./rollup/prove");
+const verify_1 = require("./rollup/verify");
 exports.program = new commander_1.Command();
 exports.program
     .name("minanft")
     .description("Mina NFT CLI tool")
-    .version("1.1.0")
+    .version("1.1.1")
     .option("-p, --password <string>", "password")
     .option("-o, --offline", "offline mode")
     .option("-d, --debug", "debug mode");
+exports.program
+    .command("rollup.blocks")
+    .description("Show information about the last 10 Rollup blocks")
+    .option("--start <string>", "Start block number")
+    .action(async (options) => {
+    console.log(`Getting blocks information...`);
+    await (0, blocks_1.blocks)(options.start);
+});
+exports.program
+    .command("rollup.list")
+    .description("List all Rollup NFT names")
+    .action(async () => {
+    console.log(`Getting list of Rollup NFT names...`);
+    await (0, blocks_1.listNames)();
+});
+exports.program
+    .command("rollup.name")
+    .description("Get the information about the Rollup NFT name")
+    .argument("<name>", "Name of the NFT")
+    .action(async (name) => {
+    console.log(`Getting the information about the ${name}...`);
+    await (0, blocks_1.nameInfo)(name);
+});
+exports.program
+    .command("rollup.prove.keys")
+    .description("Prove Rollup NFT private values off-chain")
+    .argument("<name>", "Name of the Rollup NFT")
+    .requiredOption("-k, --keys <strings...>", "Keys to prove")
+    .action(async (name, options) => {
+    console.log(`Proving keys for Rollup NFT ${name}...`);
+    await (0, prove_1.proveRollupMap)({
+        name,
+        keys: options.keys,
+        nftType: "rollup.nft",
+        onChain: false,
+    });
+});
+exports.program
+    .command("rollup.prove.key")
+    .description("Prove Rollup NFT private value on-chain")
+    .argument("<name>", "Name of the Rollup NFT")
+    .requiredOption("-k, --keys <strings...>", "Keys to prove")
+    .action(async (name, options) => {
+    console.log(`Proving key on-chain for Rollup NFT ${name}...`);
+    await (0, prove_1.proveRollupMap)({
+        name,
+        keys: options.keys,
+        nftType: "rollup.nft",
+        onChain: true,
+    });
+});
+exports.program
+    .command("verifier.deploy")
+    .description("Deploy Rollup NFT verifier contract")
+    .argument("<privateKey>", "Private key of the account")
+    .action(async (privateKey) => {
+    console.log(`Deploying Rollup NFT verifier contract...`);
+    await (0, verify_1.deployRollupVerifier)(privateKey);
+});
+exports.program
+    .command("verifier.upgrade")
+    .description("Upgrade Rollup NFT verifier contract")
+    .argument("<privateKey>", "Private key of the account")
+    .action(async (privateKey) => {
+    console.log(`Upgrading Rollup NFT verifier contract...`);
+    await (0, verify_1.upgradeRollupVerifier)(privateKey);
+});
+exports.program
+    .command("balance")
+    .description("Check the balance of the existing MINA protocol account")
+    .argument("<name>", "Name of the account")
+    .action(async (name) => {
+    console.log(`Checking the balance of the ${name}...`);
+    await (0, account_1.balance)(name);
+});
 exports.program
     .command("createaccount")
     .description("Create new MINA protocol account or import existing one")
@@ -51,36 +128,6 @@ exports.program
     .action(async (name) => {
     console.log(`Exporting account ${name}...`);
     await (0, account_1.exportAccount)(name);
-});
-exports.program
-    .command("blocks")
-    .description("Show information about the last 10 Rollup blocks")
-    .action(async () => {
-    console.log(`Getting blocks information...`);
-    await (0, blocks_1.blocks)();
-});
-exports.program
-    .command("list")
-    .description("List all Rollup NFT names")
-    .action(async () => {
-    console.log(`Getting list of Rollup NFT names...`);
-    await (0, blocks_1.listNames)();
-});
-exports.program
-    .command("name")
-    .description("Get the information about the Rollup NFT name")
-    .argument("<name>", "Name of the NFT")
-    .action(async (name) => {
-    console.log(`Getting the information about the ${name}...`);
-    await (0, blocks_1.nameInfo)(name);
-});
-exports.program
-    .command("balance")
-    .description("Check the balance of the existing MINA protocol account")
-    .argument("<name>", "Name of the account")
-    .action(async (name) => {
-    console.log(`Checking the balance of the ${name}...`);
-    await (0, account_1.balance)(name);
 });
 exports.program
     .command("reserve")
@@ -117,7 +164,7 @@ exports.program
     .requiredOption("-k, --keys <strings...>", "Keys to prove")
     .action(async (name, options) => {
     console.log(`Proving keys for NFT ${name}...`);
-    await (0, provemap_1.proveMap)(name, options.keys);
+    await (0, provemap_1.proveMap)({ name, keys: options.keys, nftType: "nft" });
 });
 exports.program
     .command("provefile")

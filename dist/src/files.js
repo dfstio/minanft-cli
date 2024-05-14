@@ -88,10 +88,14 @@ exports.save = save;
 async function load(params) {
     const { filename, type, password } = params;
     const name = "./data/" + filename + "." + type + ".json";
+    if ((0, debug_1.debug)())
+        console.log("load", { filename, type, name });
     try {
         const filedata = await promises_1.default.readFile(name, "utf8");
+        if ((0, debug_1.debug)())
+            console.log("filedata", filedata);
         const data = JSON.parse(filedata);
-        if (data.type !== type) {
+        if (data.type !== type && type !== "rollup.nft") {
             console.error(`File ${name} is not of type ${type}`);
             return;
         }
@@ -110,7 +114,7 @@ async function load(params) {
             }
         }
         else
-            return data.data;
+            return type === "rollup.nft" ? data : data.data;
     }
     catch (e) {
         console.error(`File ${name} does not exist or has wrong format`);

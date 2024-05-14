@@ -4,10 +4,12 @@ export type FileType =
   | "account"
   | "name"
   | "nft"
+  | "rollup.nft"
   | "request"
   | "map"
   | "result"
   | "proof"
+  | "rollup.proof"
   | "mask"
   | "jwt";
 
