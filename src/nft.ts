@@ -224,10 +224,14 @@ export async function createNFT(
 export async function mint() {
   try {
     if (offline()) {
-      const uri = nft().exportToString({
-        increaseVersion: true,
-        includePrivateData: false,
-      });
+      const uri = JSON.stringify(
+        nft().toJSON({
+          increaseVersion: true,
+          includePrivateData: false,
+        }),
+        null,
+        2
+      );
       const filename = await write({
         data: { request: "mint", uri, signature, privateKey, useArweave },
         filename: "mint",
@@ -240,7 +244,14 @@ export async function mint() {
         console.log(
           `Created mint request file ${filename}, please send it to the online computer and execute on https://minanft.io/tools`
         );
-        const uri = nft().exportToJSON(true);
+        const uri = JSON.stringify(
+          nft().toJSON({
+            increaseVersion: true,
+            includePrivateData: false,
+          }),
+          null,
+          2
+        );
         await write({ filename: nft().name, type: "nft", data: uri });
       }
     } else {
@@ -270,7 +281,14 @@ export async function mint() {
       if (tx === undefined)
         throw new Error("Error minting NFT: cannot send transaction");
       Memory.info(`minted`);
-      const uri = nft().exportToJSON(false);
+      const uri = JSON.stringify(
+        nft().toJSON({
+          increaseVersion: false,
+          includePrivateData: false,
+        }),
+        null,
+        2
+      );
       await write({ filename: nft().name, type: "nft", data: uri });
     }
   } catch (e) {
