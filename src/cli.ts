@@ -18,13 +18,14 @@ import { redactedProof, verifyRedactedProof } from "./redactedproof";
 import { regexp } from "./regexp";
 import { debug } from "./debug";
 import { readWord } from "./word";
+import { blocks, nameInfo, listNames } from "./blocks";
 
 export const program = new Command();
 
 program
   .name("minanft")
   .description("Mina NFT CLI tool")
-  .version("1.0.6")
+  .version("1.1.0")
   .option("-p, --password <string>", "password")
   .option("-o, --offline", "offline mode")
   .option("-d, --debug", "debug mode");
@@ -51,6 +52,32 @@ program
   .action(async (name) => {
     console.log(`Exporting account ${name}...`);
     await exportAccount(name);
+  });
+
+program
+  .command("blocks")
+  .description("Show information about the last 10 Rollup blocks")
+  .option("--start <string>", "Start block number")
+  .action(async (options) => {
+    console.log(`Getting blocks information...`);
+    await blocks(options.start);
+  });
+
+program
+  .command("list")
+  .description("List all Rollup NFT names")
+  .action(async () => {
+    console.log(`Getting list of Rollup NFT names...`);
+    await listNames();
+  });
+
+program
+  .command("name")
+  .description("Get the information about the Rollup NFT name")
+  .argument("<name>", "Name of the NFT")
+  .action(async (name) => {
+    console.log(`Getting the information about the ${name}...`);
+    await nameInfo(name);
   });
 
 program

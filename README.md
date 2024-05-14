@@ -1,6 +1,14 @@
-# Mina NFT offline CLI tool
+# Mina NFT CLI tool
 
 ## Features
+
+NEW: Rollup NFT support on Zeko network
+
+```
+  blocks [options]  Show information about the last 10 Rollup blocks
+  list              List all Rollup NFT names
+  name <name>       Get the information about the Rollup
+```
 
 - Reserve the NFT name using MinaNFT API (online mode) or frontend helper (offline mode)
 - Create NFT locally (online mode) or locally with prepared in-advance IPFS or Arweave hashes (offline mode)
@@ -28,6 +36,24 @@
 
 ## Installation
 
+```sh
+npm install -g minanft-cli
+```
+
+To confirm successful installation:
+
+```sh
+minanft --version
+```
+
+### Updating the MinaNFT CLI
+
+```sh
+npm update -g minanft-cli
+```
+
+## Development
+
 You need to install node and git
 and clone this repo
 
@@ -51,6 +77,10 @@ Make sure that minanft command is executable by running from the minanft-cli fol
 ```
 Usage: minanft [options] [command]
 
+Mina NFT CLI tool (c) DFST 2024 www.minanft.io
+
+Usage: minanft [options] [command]
+
 Mina NFT CLI tool
 
 Options:
@@ -61,18 +91,19 @@ Options:
   -h, --help                                            display help for command
 
 Commands:
-  createaccount [options] <name>                        Create new MINA protocol account or import
-                                                        existing one
+  createaccount [options] <name>                        Create new MINA protocol account or import existing one
   exportaccount <name>                                  Export existing MINA protocol account
-  balance <name>                                        Check the balance of the existing MINA protocol
-                                                        account
+  blocks [options]                                      Show information about the last 10 Rollup blocks
+  list                                                  List all Rollup NFT names
+  name <name>                                           Get the information about the Rollup NFT name
+  balance <name>                                        Check the balance of the existing MINA protocol account
   reserve <name> [account]                              Reserve NFT name
   create [options] <name> [owner]                       Create NFT
   index <name>                                          Index NFT name for minanft.io frontend
   prove [options] <name>                                Prove NFT metadata
   provefile [options] <name> <key>                      Prove NFT file
   provetext [options] <name> <key>                      Prove NFT text
-  provepng [options] <name> <key> <original> <redacted> Prove NFT png image
+  provepng [options] <name> <key> <original> <redacte>  Prove NFT png image
   verify <name>                                         Verify NFT metadata
   verifyfile [options] <name> <key> <file>              Verify NFT file
   verifytext <name> <key>                               Verify NFT redacted text file
@@ -89,6 +120,7 @@ Commands:
   arweave <key>                                         Set Arweave private key for the Arweave storage
   changepassword <name> <type> <oldPwd> <newPwd>        Change password for existing file
   help [command]                                        display help for command
+
 
 ```
 
