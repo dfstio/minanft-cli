@@ -1,5 +1,5 @@
 import { MerkleTree, Field } from "o1js";
-export type FileType = "account" | "name" | "nft" | "request" | "map" | "result" | "proof" | "mask" | "jwt";
+export type FileType = "account" | "name" | "nft" | "rollup.nft" | "request" | "map" | "result" | "proof" | "rollup.proof" | "mask" | "jwt";
 export interface FileData {
     filename: string;
     type: FileType;

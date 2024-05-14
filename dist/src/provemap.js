@@ -7,12 +7,13 @@ const offline_1 = require("./offline");
 const minanft_1 = require("minanft");
 const o1js_1 = require("o1js");
 const mina_1 = require("./mina");
-async function proveMap(name, keys) {
+async function proveMap(params) {
+    const { name, keys, nftType } = params;
     if (keys.length === 0)
         throw new Error("No keys to prove");
     if ((0, debug_1.debug)())
         console.log("Proving NFT metadata:\n", { name, keys });
-    const uri = await (0, files_1.load)({ filename: name, type: "nft" });
+    const uri = await (0, files_1.load)({ filename: name, type: nftType });
     if ((0, debug_1.debug)())
         console.log("NFT metadata:\n", { uri });
     if (uri === undefined)

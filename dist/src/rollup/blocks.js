@@ -1,33 +1,41 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listNames = exports.nameInfo = exports.blocks = void 0;
-const debug_1 = require("./debug");
+exports.getNameInfo = exports.getMap = exports.getDatabase = exports.getBlock = exports.listNames = exports.nameInfo = exports.blocks = void 0;
+const debug_1 = require("../debug");
 const minanft_1 = require("minanft");
 const o1js_1 = require("o1js");
-const contract_1 = require("./rollup/contract");
+const contract_1 = require("./contract");
 const zkcloudworker_1 = require("zkcloudworker");
-const storage_1 = require("./rollup/storage");
-const contractAddress = "B62qo2gLfhzbKpSQw3G7yQaajEJEmxovqm5MBRb774PdJUw6a7XnNFT";
-const chain = "zeko";
-async function blocks() {
+const storage_1 = require("./storage");
+const map_json_1 = require("./map-json");
+const config_1 = require("./config");
+async function blocks(startBlock) {
     if ((0, debug_1.debug)())
         console.log("blocks");
-    const info = await getBlocksInfo({ contractAddress, chain });
+    const info = await getBlocksInfo({ contractAddress: config_1.contractAddress, chain: config_1.chain, startBlock });
     console.log("blocks info:", info);
     return;
 }
 exports.blocks = blocks;
-async function nameInfo(name) {
+async function nameInfo(rollupNFTname) {
     if ((0, debug_1.debug)())
         console.log("name info");
-    const info = await getNameInfo({ contractAddress, chain, name });
-    console.log("name info:", info);
+    const { name, address, ipfs, uri, url, nft } = await getNameInfo({
+        contractAddress: config_1.contractAddress,
+        chain: config_1.chain,
+        name: rollupNFTname,
+    });
+    console.log("name info:", { name, address, ipfs, uri, url, nft });
 }
 exports.nameInfo = nameInfo;
 async function listNames() {
     if ((0, debug_1.debug)())
         console.log("list names");
-    const database = await getDatabase({ contractAddress, chain });
+    const database = await getDatabase({
+        contractAddress: config_1.contractAddress,
+        chain: config_1.chain,
+        blockType: "last",
+    });
     const names = Object.keys(database);
     console.log("names:", names);
 }
@@ -35,12 +43,19 @@ exports.listNames = listNames;
 async function getBlocksInfo(params) {
     const MAX_BLOCKS = 10;
     try {
-        let startBlock = params.startBlock
-            ? o1js_1.PublicKey.fromBase58(params.startBlock)
-            : undefined;
-        let contractAddress = o1js_1.PublicKey.fromBase58(params.contractAddress);
         await (0, o1js_1.initializeBindings)();
         await (0, minanft_1.initBlockchain)(params.chain);
+        let startBlock = undefined;
+        let contractAddress = o1js_1.PublicKey.fromBase58(params.contractAddress);
+        if (params.startBlock) {
+            try {
+                startBlock = o1js_1.PublicKey.fromBase58(params.startBlock);
+            }
+            catch (error) {
+                console.error("Wrong start block address, should be public key of the block", error);
+                return "Error in getBlocksInfo";
+            }
+        }
         const zkApp = new contract_1.RollupContract(contractAddress);
         const tokenId = zkApp.deriveTokenId();
         await (0, minanft_1.fetchMinaAccount)({
@@ -132,13 +147,14 @@ async function getBlocksInfo(params) {
         return "Error in getBlocksInfo";
     }
 }
-async function getDatabase(params) {
+async function getBlock(params) {
+    const { blockType } = params;
     if ((0, debug_1.debug)())
         console.log("getNameInfo", params);
     try {
-        let contractAddress = o1js_1.PublicKey.fromBase58(params.contractAddress);
         await (0, o1js_1.initializeBindings)();
         await (0, minanft_1.initBlockchain)(params.chain);
+        let contractAddress = o1js_1.PublicKey.fromBase58(params.contractAddress);
         const zkApp = new contract_1.RollupContract(contractAddress);
         const tokenId = zkApp.deriveTokenId();
         await (0, minanft_1.fetchMinaAccount)({
@@ -147,7 +163,15 @@ async function getDatabase(params) {
         if (!o1js_1.Mina.hasAccount(contractAddress)) {
             throw new Error(`getNameInfo: Contract ${contractAddress.toBase58()} not found`);
         }
-        const startBlock = contract_1.LastBlock.unpack(zkApp.lastCreatedBlock.get()).address;
+        const startBlock = blockType === "last"
+            ? contract_1.LastBlock.unpack(zkApp.lastCreatedBlock.get()).address
+            : blockType === "validated"
+                ? contract_1.LastBlock.unpack(zkApp.lastValidatedBlock.get()).address
+                : blockType === "proved"
+                    ? contract_1.LastBlock.unpack(zkApp.lastProvedBlock.get()).address
+                    : undefined;
+        if (startBlock === undefined)
+            throw new Error("Wrong block type");
         await (0, minanft_1.fetchMinaAccount)({ publicKey: startBlock, tokenId });
         if (!o1js_1.Mina.hasAccount(startBlock, tokenId)) {
             throw new Error(`getNameInfo: Block ${startBlock.toBase58()} not found`);
@@ -155,6 +179,8 @@ async function getDatabase(params) {
         let blockAddress = startBlock;
         let block = new contract_1.BlockContract(blockAddress, tokenId);
         const storage = block.storage.get().toIpfsHash();
+        const root = block.root.get();
+        const blockNumber = Number(block.blockNumber.get().toBigInt());
         if ((0, debug_1.debug)())
             console.log("storage:", storage);
         const data = await (0, storage_1.loadFromIPFS)(storage);
@@ -164,37 +190,74 @@ async function getDatabase(params) {
         const database = await (0, storage_1.loadFromIPFS)(databaseIPFS);
         if ((0, debug_1.debug)())
             console.log("database:", database);
-        return database.database;
+        return {
+            address: blockAddress.toBase58(),
+            blockNumber,
+            database: database.database,
+            mapIPFS: database.map.slice(2),
+            root,
+        };
     }
     catch (error) {
         console.error("Error in getBlocksInfo", error);
         throw new Error("Error in getBlocksInfo");
     }
 }
+exports.getBlock = getBlock;
+async function getDatabase(params) {
+    const { contractAddress, chain, blockType } = params;
+    const block = await getBlock({
+        contractAddress,
+        chain,
+        blockType,
+    });
+    return block.database;
+}
+exports.getDatabase = getDatabase;
+async function getMap(params) {
+    let mapIPFS = "";
+    if (typeof params === "string")
+        mapIPFS = params;
+    else {
+        const { contractAddress, chain, blockType } = params;
+        const block = await getBlock({
+            contractAddress,
+            chain,
+            blockType,
+        });
+        mapIPFS = block.mapIPFS;
+    }
+    const mapJson = await (0, storage_1.loadFromIPFS)(mapIPFS);
+    const map = new o1js_1.MerkleMap();
+    map.tree = (0, map_json_1.treeFromJSON)(mapJson.map);
+    return map;
+}
+exports.getMap = getMap;
 async function getNameInfo(params) {
     try {
         const { contractAddress, chain, name } = params;
-        const database = await getDatabase({ contractAddress, chain });
-        let serializedDomain = database[name];
-        if (!serializedDomain) {
-            serializedDomain = database["@" + name];
-            if (!serializedDomain) {
+        const blockType = params.blockType ?? "last";
+        const database = await getDatabase({ contractAddress, chain, blockType });
+        let fields = database[name];
+        if (!fields) {
+            fields = database["@" + name];
+            if (!fields) {
                 console.log("Names:", Object.keys(database));
                 throw new Error(`Name ${name} not found`);
             }
         }
-        const domain = contract_1.RollupNftName.fromFields((0, zkcloudworker_1.deserializeFields)(serializedDomain));
-        const ipfs = domain.data.storage.toIpfsHash();
+        const rollupNFT = contract_1.RollupNftName.fromFields((0, zkcloudworker_1.deserializeFields)(fields));
+        const ipfs = rollupNFT.data.storage.toIpfsHash();
         const uri = "https://gateway.pinata.cloud/ipfs/" + ipfs;
         const url = "https://minanft.io/nft/i" + ipfs;
         const nft = await (0, storage_1.loadFromIPFS)(ipfs);
-        const address = domain.data.address.toBase58();
-        const expiry = domain.data.expiry.toBigInt().toString();
-        const data = { name, address, ipfs, expiry, uri, url, nft };
+        const address = rollupNFT.data.address.toBase58();
+        const data = { name, address, ipfs, uri, url, nft, fields, rollupNFT };
         return data;
     }
     catch (error) {
-        console.error("Error in getMetadata", error);
-        return "Error in getMetadata";
+        console.error("Error in getNameInfo", error);
+        throw Error("Error in getNameInfo");
     }
 }
+exports.getNameInfo = getNameInfo;

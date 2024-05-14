@@ -4,11 +4,17 @@ import { offline } from "./offline";
 import { MinaNFT, RedactedMinaNFT, MINANFT_NAME_SERVICE } from "minanft";
 import { PublicKey } from "o1js";
 import { init } from "./mina";
+import { FileType } from "./model/fileData";
 
-export async function proveMap(name: string, keys: string[]) {
+export async function proveMap(params: {
+  name: string;
+  keys: string[];
+  nftType: FileType;
+}) {
+  const { name, keys, nftType } = params;
   if (keys.length === 0) throw new Error("No keys to prove");
   if (debug()) console.log("Proving NFT metadata:\n", { name, keys });
-  const uri = await load({ filename: name, type: "nft" });
+  const uri = await load({ filename: name, type: nftType });
   if (debug()) console.log("NFT metadata:\n", { uri });
   if (uri === undefined) throw new Error(`NFT ${name} not found`);
   const keyvalues = getKeys(uri, keys);

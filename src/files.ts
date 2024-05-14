@@ -102,11 +102,14 @@ export async function load(params: {
   password?: string;
 }) {
   const { filename, type, password } = params;
+
   const name = "./data/" + filename + "." + type + ".json";
+  if (debug()) console.log("load", { filename, type, name });
   try {
     const filedata = await fs.readFile(name, "utf8");
+    if (debug()) console.log("filedata", filedata);
     const data = JSON.parse(filedata);
-    if (data.type !== type) {
+    if (data.type !== type && type !== "rollup.nft") {
       console.error(`File ${name} is not of type ${type}`);
       return;
     }
@@ -122,7 +125,7 @@ export async function load(params: {
         console.error(`File ${name} is encrypted and password is wrong`);
         return undefined;
       }
-    } else return data.data;
+    } else return type === "rollup.nft" ? data : data.data;
   } catch (e) {
     console.error(`File ${name} does not exist or has wrong format`);
     return undefined;

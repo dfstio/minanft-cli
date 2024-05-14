@@ -5,9 +5,13 @@
 NEW: Rollup NFT support on Zeko network
 
 ```
-  blocks [options]  Show information about the last 10 Rollup blocks
-  list              List all Rollup NFT names
-  name <name>       Get the information about the Rollup
+  rollup.blocks [options]              Show information about the last 10 Rollup blocks
+  rollup.list                          List all Rollup NFT names
+  rollup.name <name>                   Get the information about the Rollup NFT name
+  rollup.prove.keys [options] <name>   Prove Rollup NFT private values off-chain
+  rollup.prove.key [options] <name>    Prove Rollup NFT private value on-chain
+  verifier.deploy <privateKey>         Deploy Rollup NFT verifier contract
+  verifier.upgrade <privateKey>        Upgrade Rollup NFT verifier contract
 ```
 
 - Reserve the NFT name using MinaNFT API (online mode) or frontend helper (offline mode)
@@ -75,8 +79,6 @@ Make sure that minanft command is executable by running from the minanft-cli fol
 ### minanft commands
 
 ```
-Usage: minanft [options] [command]
-
 Mina NFT CLI tool (c) DFST 2024 www.minanft.io
 
 Usage: minanft [options] [command]
@@ -91,12 +93,16 @@ Options:
   -h, --help                                            display help for command
 
 Commands:
+  rollup.blocks [options]                               Show information about the last 10 Rollup blocks
+  rollup.list                                           List all Rollup NFT names
+  rollup.name <name>                                    Get the information about the Rollup NFT name
+  rollup.prove.keys [options] <name>                    Prove Rollup NFT private values off-chain
+  rollup.prove.key [options] <name>                     Prove Rollup NFT private value on-chain
+  verifier.deploy <privateKey>                          Deploy Rollup NFT verifier contract
+  verifier.upgrade <privateKey>                         Upgrade Rollup NFT verifier contract
+  balance <name>                                        Check the balance of the existing MINA protocol account
   createaccount [options] <name>                        Create new MINA protocol account or import existing one
   exportaccount <name>                                  Export existing MINA protocol account
-  blocks [options]                                      Show information about the last 10 Rollup blocks
-  list                                                  List all Rollup NFT names
-  name <name>                                           Get the information about the Rollup NFT name
-  balance <name>                                        Check the balance of the existing MINA protocol account
   reserve <name> [account]                              Reserve NFT name
   create [options] <name> [owner]                       Create NFT
   index <name>                                          Index NFT name for minanft.io frontend
@@ -119,9 +125,7 @@ Commands:
   ipfs <jwt>                                            Set Pinata JWT token for the IPFS storage
   arweave <key>                                         Set Arweave private key for the Arweave storage
   changepassword <name> <type> <oldPwd> <newPwd>        Change password for existing file
-  help [command]                                        display help for command
-
-
+  help [command]
 ```
 
 ### create subcommands
